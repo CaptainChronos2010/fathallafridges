@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>إعداد بيانات الثلاجات - فتح الله ماركت</title>
+<style>
+  :root {
+    --primary: #1a7f5a;
+    --primary-light: #e8f5ef;
+    --primary-dark: #0f5c40;
+    --danger: #c0392b;
+    --danger-light: #fdf0ef;
+    --border: #e0e0e0;
+    --border-focus: #1a7f5a;
+    --text: #1a1a1a;
+    --text-secondary: #666;
+    --bg: #f8f9fa;
+    --card: #fff;
+    --radius: 10px;
+    --shadow: 0 1px 4px rgba(0,0,0,0.08);
+    --pad: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212;
+      --card: #1e1e1e;
+      --border: #333;
+      --border-focus: #2ecc8f;
+      --text: #f0f0f0;
+      --text-secondary: #999;
+      --primary-light: #0f2e1e;
+      --danger-light: #2e1010;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; padding-bottom: env(safe-area-inset-bottom, 0); }
+
+  .header { background: var(--primary); color: #fff; padding: 20px var(--pad); text-align: center; }
+  .header h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .header p { font-size: 13px; opacity: 0.85; }
+
+  .form-wrap { max-width: 560px; margin: 0 auto; padding: var(--pad); }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 0.5px solid var(--border); margin-bottom: 16px; overflow: hidden; }
+
+  .card-header { padding: 14px var(--pad); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .card-header .num { width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card-header h2 { font-size: 15px; font-weight: 600; }
+
+  .card-body { padding: var(--pad); }
+
+  label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+  select, input[type="text"] {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 15px; background: var(--card); color: var(--text); outline: none; font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  select:focus, input[type="text"]:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(26,127,90,0.12); }
+
+  .sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .section-check { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .section-check:hover { border-color: var(--primary); background: var(--primary-light); }
+  .section-check.active { border-color: var(--primary); background: var(--primary-light); }
+  .section-check input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; flex-shrink: 0; }
+  .section-check span { font-size: 13px; line-height: 1.3; }
+
+  .selected-sections { margin-top: 20px; }
+  .selected-sections h3 { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 0.5px solid var(--border); }
+
+  .section-block { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+  .section-block-header { background: var(--primary-light); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+  .section-block-header span { font-size: 14px; font-weight: 600; color: var(--primary-dark); }
+  .add-fridge-btn { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .add-fridge-btn:hover { background: var(--primary-dark); }
+
+  .fridges-list { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .fridge-row { display: flex; align-items: center; gap: 8px; }
+  .fridge-row input[type="text"] { flex: 1; padding: 8px 10px; font-size: 14px; }
+  .fridge-row select { width: 110px; padding: 8px 8px; font-size: 13px; flex-shrink: 0; }
+  .fridge-row .del-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; cursor: pointer; color: var(--danger); font-size: 14px; flex-shrink: 0; line-height: 1; }
+  .fridge-row .del-btn:hover { background: var(--danger-light); border-color: var(--danger); }
+
+  .empty-fridges { padding: 12px 14px; font-size: 13px; color: var(--text-secondary); text-align: center; }
+
+  .submit-btn { width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius); font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; margin-top: 8px; transition: background 0.15s; }
+  .submit-btn:hover { background: var(--primary-dark); }
+  .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  .status-msg { text-align: center; padding: 12px; border-radius: var(--radius); font-size: 14px; margin-top: 12px; }
+  .status-msg.success { background: var(--primary-light); color: var(--primary-dark); border: 1px solid var(--primary); }
+  .status-msg.error { background: var(--danger-light); color: var(--danger); border: 1px solid var(--danger); }
+
+  .fridge-count-badge { background: var(--primary); color: #fff; border-radius: 10px; font-size: 11px; padding: 2px 7px; margin-right: 4px; }
+
+  .hint { font-size: 12px; color: var(--text-secondary); margin-top: 5px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>فتح الله ماركت</h1>
+  <p>إعداد بيانات الثلاجات — يُملأ مرة واحدة</p>
+</div>
+
+<div class="form-wrap">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="num">١</div>
+      <h2>اختر الفرع</h2>
+    </div>
+    <div class="card-body">
+      <label for="branch">اسم الفرع</label>
+      <select id="branch">
+        <option value="">-- اختر الفرع --</option>
+        <option>المحلة</option>
+        <option>دمنهور</option>
+        <option>دمنهور الاستاد</option>
+        <option>دمياط</option>
+        <option>طنطا</option>
+        <option>طنطا اوتلت</option>
+        <option>كفر الدوار</option>
+        <option>كفر الدوار مول</option>
+        <option>استانلي</option>
+        <option>الابراهيمية</option>
+        <option>الابراهيمية الميني</option>
+        <option>الانفوشى</option>
+        <option>النصر</option>
+        <option>جاردنيا</option>
+        <option>سموحة</option>
+        <option>سموحة الميني</option>
+        <option>سيتى سكوير</option>
+        <option>سيدى جابر المحطة</option>
+        <option>سيدي بشر ميني</option>
+        <option>سيدي جابر ميني</option>
+        <option>طوسون</option>
+        <option>فلمنج</option>
+        <option>ملك حفني</option>
+        <option>ابو يوسف</option>
+        <option>الهانوفيل</option>
+        <option>اكتوبر</option>
+        <option>الدخيلة 1 ميني</option>
+        <option>الدخيلة 2 ميني</option>
+        <option>عجمى ستار</option>
+        <option>مطروح</option>
+        <option>الرحاب</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="num">٢</div>
+      <h2>الأقسام الموجودة في فرعك</h2>
+    </div>
+    <div class="card-body">
+      <p class="hint" style="margin-bottom:12px">اختر الأقسام المتاحة عندك فقط</p>
+      <div class="sections-grid" id="sectionsGrid"></div>
+
+      <div class="selected-sections" id="selectedSections" style="display:none">
+        <h3>تفاصيل ثلاجات كل قسم</h3>
+        <div id="sectionBlocks"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="submitForm()">إرسال البيانات</button>
+  <div id="statusMsg"></div>
+
+</div>
+
+<script>
+const SECTIONS = [
+  'البقالة بالوزن',
+  'البقالة المعبأة',
+  'الدواجن الفريش',
+  'الجزارة البلدي',
+  'الجزارة المجمدة',
+  'الاسماك الفريش',
+  'الوجبات الجاهزة',
+  'الخضار و الفاكهة',
+  'العطارة',
+  'المجمدات',
+  'الحلويات',
+  'مخبوزات ايديز'
+];
+
+const checkedSections = new Set();
+
+function buildSectionsGrid() {
+  const grid = document.getElementById('sectionsGrid');
+  SECTIONS.forEach(sec => {
+    const label = document.createElement('label');
+    label.className = 'section-check';
+    label.innerHTML = `<input type="checkbox" value="${sec}" onchange="toggleSection('${sec}', this)"><span>${sec}</span>`;
+    grid.appendChild(label);
+  });
+}
+
+function toggleSection(name, cb) {
+  const label = cb.closest('label');
+  if (cb.checked) {
+    checkedSections.add(name);
+    label.classList.add('active');
+  } else {
+    checkedSections.delete(name);
+    label.classList.remove('active');
+    removeSectionBlock(name);
+  }
+  renderSectionBlocks();
+}
+
+function renderSectionBlocks() {
+  const container = document.getElementById('sectionBlocks');
+  const wrap = document.getElementById('selectedSections');
+
+  if (checkedSections.size === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  const existing = new Set([...container.querySelectorAll('.section-block')].map(b => b.dataset.sec));
+
+  checkedSections.forEach(sec => {
+    if (!existing.has(sec)) {
+      const block = document.createElement('div');
+      block.className = 'section-block';
+      block.dataset.sec = sec;
+      block.innerHTML = `
+        <div class="section-block-header">
+          <span>${sec}</span>
+          <button class="add-fridge-btn" onclick="addFridge('${sec}')">+ إضافة ثلاجة</button>
+        </div>
+        <div class="fridges-list" id="fridges_${sanitize(sec)}">
+          <div class="empty-fridges">لا توجد ثلاجات — اضغط "إضافة ثلاجة"</div>
+        </div>`;
+      container.appendChild(block);
+    }
+  });
+
+  [...container.querySelectorAll('.section-block')].forEach(b => {
+    if (!checkedSections.has(b.dataset.sec)) b.remove();
+  });
+}
+
+function removeSectionBlock(name) {
+  const block = document.querySelector(`.section-block[data-sec="${name}"]`);
+  if (block) block.remove();
+}
+
+function sanitize(s) { return s.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, ''); }
+
+let fridgeCounters = {};
+
+function addFridge(sec) {
+  const key = sanitize(sec);
+  if (!fridgeCounters[key]) fridgeCounters[key] = 0;
+  fridgeCounters[key]++;
+  const list = document.getElementById('fridges_' + key);
+  const empty = list.querySelector('.empty-fridges');
+  if (empty) empty.remove();
+
+  const row = document.createElement('div');
+  row.className = 'fridge-row';
+  const idx = fridgeCounters[key];
+  row.innerHTML = `
+    <input type="text" placeholder="رمز الثلاجة (مثل R1)" style="flex:1" />
+    <select>
+      <option value="تبريد">❄ تبريد</option>
+      <option value="تجميد">🧊 تجميد</option>
+    </select>
+    <button class="del-btn" onclick="this.closest('.fridge-row').remove(); checkEmpty('${key}')">✕</button>`;
+  list.appendChild(row);
+}
+
+function checkEmpty(key) {
+  const list = document.getElementById('fridges_' + key);
+  if (!list) return;
+  if (list.querySelectorAll('.fridge-row').length === 0) {
+    list.innerHTML = '<div class="empty-fridges">لا توجد ثلاجات — اضغط "إضافة ثلاجة"</div>';
+  }
+}
+
+function collectData() {
+  const branch = document.getElementById('branch').value;
+  if (!branch) return { error: 'اختر الفرع أولاً' };
+  if (checkedSections.size === 0) return { error: 'اختر قسماً واحداً على الأقل' };
+
+  const fridges = [];
+  let hasAnyFridge = false;
+
+  for (const sec of checkedSections) {
+    const key = sanitize(sec);
+    const rows = document.querySelectorAll(`#fridges_${key} .fridge-row`);
+    if (rows.length === 0) return { error: `قسم "${sec}" ليس فيه ثلاجات — أضف على الأقل ثلاجة واحدة` };
+    rows.forEach(row => {
+      const code = row.querySelector('input').value.trim();
+      const type = row.querySelector('select').value;
+      if (!code) return;
+      hasAnyFridge = true;
+      fridges.push({ branch, section: sec, code, type });
+    });
+  }
+
+  if (!hasAnyFridge) return { error: 'أدخل رمز ثلاجة واحدة على الأقل' };
+  return { data: fridges, branch };
+}
+
+async function submitForm() {
+  const result = collectData();
+  const statusEl = document.getElementById('statusMsg');
+  const btn = document.getElementById('submitBtn');
+
+  if (result.error) {
+    statusEl.className = 'status-msg error';
+    statusEl.textContent = result.error;
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال...';
+  statusEl.textContent = '';
+
+  try {
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtiwHtRTp0Hg7JCnH-Bw2DVgGVBRQL-nMXYyeABOAyPezTyzWDSliGxIMjqN5S3v-mIg/exec';
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(result.data),
+    });
+    const text = await res.text();
+    if (text.includes('success') || res.ok) {
+      statusEl.className = 'status-msg success';
+      statusEl.innerHTML = `تم إرسال بيانات فرع <strong>${result.branch}</strong> بنجاح ✓<br><span style="font-size:13px">شكراً — يمكنك إغلاق الصفحة الآن</span>`;
+      btn.style.display = 'none';
+    } else {
+      throw new Error(text);
+    }
+  } catch (e) {
+    statusEl.className = 'status-msg error';
+    statusEl.textContent = 'حدث خطأ في الإرسال — تأكد من الاتصال وحاول مرة أخرى';
+    btn.disabled = false;
+    btn.textContent = 'إرسال البيانات';
+  }
+}
+
+buildSectionsGrid();
+</script>
+</body>
+</html>
