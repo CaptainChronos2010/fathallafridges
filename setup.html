@@ -305,7 +305,7 @@ function renderBlocks(){
     const rows = state.data[sec] || [];
     const rowsHtml = rows.map(function(r, i){
       return '<div class="row" data-i="' + i + '">' +
-        '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="رمز الثلاجة (R1)" maxlength="30" autocomplete="off">' +
+        '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="رمز الثلاجة (A)" maxlength="30" autocomplete="off">' +
         '<div class="kind">' +
           '<button type="button" data-kind="تبريد" class="' + (r.type !== 'تجميد' ? 'on' : '') + '">تبريد</button>' +
           '<button type="button" data-kind="تجميد" class="' + (r.type === 'تجميد' ? 'on' : '') + '">تجميد</button>' +
