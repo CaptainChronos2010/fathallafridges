@@ -36,7 +36,6 @@
   .hero{ background:linear-gradient(160deg, var(--brand), var(--brand-dark)); color:#fff; padding:20px 18px; border-radius:0 0 26px 26px; }
   .hero h1{ margin:0; font-size:18px; }
   .hero p{ margin:2px 0 0; font-size:12.5px; opacity:.85; }
-  .hero a{ color:#fff; font-size:12.5px; opacity:.9; }
 
   .wrap{ max-width:640px; margin:0 auto; padding:16px 14px; }
   .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden; }
@@ -68,15 +67,18 @@
   .block-head .cnt{ font-size:11.5px; color:var(--brand-dark); background:#fff3; border-radius:999px; padding:2px 8px; }
   .add{ border:none; background:var(--brand); color:#fff; border-radius:9px; padding:7px 11px; font-size:12.5px; font-weight:700; min-height:34px; }
 
-  .rows{ padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
-  .row{ display:flex; align-items:center; gap:8px; }
-  .row input{ flex:1; min-width:0; }
-  .kind{ display:flex; gap:4px; flex:0 0 auto; }
-  .kind button{
-    min-height:44px; padding:0 10px; border:1.5px solid var(--line); background:var(--card);
-    border-radius:10px; font-size:12px; font-weight:700; color:var(--muted);
+  .rows{ padding:10px 12px; display:flex; flex-direction:column; gap:10px; }
+  .row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .row input[type="text"]{ flex:1 1 100px; min-width:80px; }
+
+  /* ===== dropdown النوع ===== */
+  .row-selects{ display:flex; gap:6px; flex:2 1 180px; min-width:0; }
+  .row-selects select{
+    flex:1; min-width:0; min-height:44px; padding:0 8px; border-radius:10px;
+    font-size:13px; background:var(--bg);
   }
-  .kind button.on{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .row-selects select:focus{ border-color:var(--brand); box-shadow:0 0 0 2px var(--brand-soft); }
+
   .del{
     width:44px; height:44px; flex:0 0 auto; border:1px solid var(--line); background:var(--card);
     color:var(--bad); border-radius:10px; font-size:16px; line-height:1;
@@ -181,7 +183,7 @@
 
 <script>
 /* ============================================================
-   ⚙️  الإعدادات — نفس القائمة المستخدمة في صفحة التسجيل
+   ⚙️  الإعدادات
    ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbycG7Fld1-DO3kCcW-GotiiSPkzHpAwNL0lpmdfLpE8_bB_nh-mp8egD0cYcjPIIICI_A/exec";
 
@@ -196,16 +198,27 @@ const BRANCHES = [
 const SECTIONS = [
   'البقالة بالوزن','البقالة المعبأة','الدواجن الفريش','الجزارة البلدي','الجزارة المجمدة',
   'الاسماك الفريش','الوجبات الجاهزة','الخضار و الفاكهة','العطارة','المجمدات',
-  'الحلويات','مخبوزات ايديز','الحلواني و الخباز'
+  'الحلويات','مخبوزات ايديز'
 ];
 
-/* النص الإرشادي داخل خانة رمز الثلاجة — غيّره كما تريد */
-const CODE_PLACEHOLDER = 'R';
+/* ============================================================
+   ⚙️  أنواع الثلاجات
+   - عشان تضيف نوع جديد: ضيف الاسم بين الأقواس مثل: 'اسم النوع'
+   - عشان تشيل نوع: احذف السطر بتاعه
+   - الأنواع دي متاحة للتبريد والتجميد كلهم
+   ============================================================ */
+const FRIDGE_SUBTYPES = [
+  'مالتي ديك',
+  'بروموشن',
+  'غرفة ( رئيسية )',
+  'غرفة ( معمل قسم )',
+  'عرض',
+  'اندرتيبول',
+  'فريزر افقي',
+  'كومبي'
+];
 
-const FRIDGE_TYPES = {
-     'تبريد': ['عرض مفتوح', 'عرض مغلق', 'غرفة تبريد'],
-  'تجميد': [, 'اندرتيبول', 'فريزر افقي', 'غرفة تخزين(بالمعمل)', 'كومبي', 'عرض', 'غرفة']
-};
+const CODE_PLACEHOLDER = 'A';
 
 /* ============================================================
    لا حاجة لتعديل ما يلي
@@ -215,9 +228,9 @@ const LS_DRAFT = 'fathalla:setup:draft';
 
 const state = {
   branch: '',
-  existing: null,       /* {count, sections} من السيرفر */
-  picked: [],           /* أسماء الأقسام المختارة بالترتيب */
-  data: {},             /* section -> [{code,type}] */
+  existing: null,
+  picked: [],
+  data: {},
   busy: false,
   confirmed: false
 };
@@ -231,9 +244,7 @@ function arNum(n){
   const d = '٠١٢٣٤٥٦٧٨٩';
   return String(n).replace(/\d/g, function(x){ return d[+x]; });
 }
-function cleanCode(s){
-  return String(s || '').replace(/\s+/g, ' ').trim();
-}
+function cleanCode(s){ return String(s || '').replace(/\s+/g, ' ').trim(); }
 function apiReady(){ return API_URL && API_URL.indexOf('http') === 0; }
 
 function fetchJSON(url, opts, timeoutMs){
@@ -275,6 +286,32 @@ function msg(kind, html){
 }
 function clearMsg(){ $('#topMsg').className = 'msg'; $('#topMsg').innerHTML = ''; }
 
+/* ---------- بناء الـ HTML لصف ثلاجة واحدة ---------- */
+function buildRowHTML(r, i){
+  const cooling = r.cooling || 'تبريد';
+  const subtype = r.subtype || '';
+
+  /* dropdown التبريد/التجميد */
+  const coolingOpts = ['تبريد', 'تجميد'].map(function(v){
+    return '<option value="' + esc(v) + '"' + (cooling === v ? ' selected' : '') + '>' + esc(v) + '</option>';
+  }).join('');
+
+  /* dropdown النوع */
+  const subtypeOpts = '<option value="">-- النوع --</option>' +
+    FRIDGE_SUBTYPES.map(function(v){
+      return '<option value="' + esc(v) + '"' + (subtype === v ? ' selected' : '') + '>' + esc(v) + '</option>';
+    }).join('');
+
+  return '<div class="row" data-i="' + i + '">' +
+    '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="' + esc(CODE_PLACEHOLDER) + '" maxlength="30" autocomplete="off">' +
+    '<div class="row-selects">' +
+      '<select class="cooling-select">' + coolingOpts + '</select>' +
+      '<select class="subtype-select">' + subtypeOpts + '</select>' +
+    '</div>' +
+    '<button type="button" class="del" aria-label="حذف">✕</button>' +
+  '</div>';
+}
+
 /* ---------- بناء الصفحة ---------- */
 function fillBranches(){
   const sel = $('#branch');
@@ -297,7 +334,7 @@ function toggleSection(name){
     delete state.data[name];
   } else {
     state.picked.push(name);
-    if (!state.data[name]) state.data[name] = [{ code:'', type:'تبريد' }];
+    if (!state.data[name]) state.data[name] = [{ code:'', cooling:'تبريد', subtype:'' }];
   }
   renderSecGrid();
   renderBlocks();
@@ -311,16 +348,7 @@ function renderBlocks(){
 
   box.innerHTML = state.picked.map(function(sec){
     const rows = state.data[sec] || [];
-    const rowsHtml = rows.map(function(r, i){
-      return '<div class="row" data-i="' + i + '">' +
-        '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="' + esc(CODE_PLACEHOLDER) + '" maxlength="30" autocomplete="off">' +
-        '<div class="kind">' +
-          '<button type="button" data-kind="تبريد" class="' + (r.type !== 'تجميد' ? 'on' : '') + '">تبريد</button>' +
-          '<button type="button" data-kind="تجميد" class="' + (r.type === 'تجميد' ? 'on' : '') + '">تجميد</button>' +
-        '</div>' +
-        '<button type="button" class="del" aria-label="حذف">✕</button>' +
-      '</div>';
-    }).join('');
+    const rowsHtml = rows.map(function(r, i){ return buildRowHTML(r, i); }).join('');
 
     return '<div class="block" data-sec="' + esc(sec) + '">' +
       '<div class="block-head"><b>' + esc(sec) + '</b>' +
@@ -339,7 +367,6 @@ function updateBar(){
   if (!state.branch) { info.textContent = 'اختر الفرع أولًا'; }
   else if (!secs) { info.textContent = 'اختر قسمًا واحدًا على الأقل'; }
   else { info.textContent = arNum(secs) + ' أقسام · ' + arNum(total) + ' ثلاجة'; }
-
   $('#submitBtn').disabled = state.busy || !state.branch || !secs || total === 0;
   $('#submitBtn').textContent = state.busy ? 'جارٍ الحفظ…' : 'حفظ الإعداد';
 }
@@ -364,34 +391,45 @@ function onBlockClick(e){
   const sec = block.dataset.sec;
 
   if (e.target.closest('.add')) {
-    state.data[sec].push({ code:'', type:'تبريد' });
+    state.data[sec].push({ code:'', cooling:'تبريد', subtype:'' });
     renderBlocks();
     updateBar();
     saveDraft();
-    const rows = $(block).querySelectorAll('.row');
-    const last = rows[rows.length - 1];
-    if (last) last.querySelector('.code-input').focus();
+    /* فوكس على آخر code-input */
+    const allRows = block.querySelectorAll ? null : null;
+    const rows = document.querySelector('[data-sec="' + sec + '"] .rows');
+    if (rows) {
+      const inputs = rows.querySelectorAll('.code-input');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }
     return;
   }
 
-  const del = e.target.closest('.del');
-  if (del) {
-    const rowEl = del.closest('.row');
+  if (e.target.closest('.del')) {
+    const rowEl = e.target.closest('.row');
     const i = +rowEl.dataset.i;
     state.data[sec].splice(i, 1);
-    if (!state.data[sec].length) state.data[sec] = [];
     renderBlocks();
     updateBar();
     saveDraft();
     return;
   }
+}
 
-  const kind = e.target.closest('[data-kind]');
-  if (kind) {
-    const rowEl = kind.closest('.row');
-    const i = +rowEl.dataset.i;
-    state.data[sec][i].type = kind.dataset.kind;
-    renderBlocks();
+function onBlockChange(e){
+  const block = e.target.closest('.block');
+  if (!block) return;
+  const sec = block.dataset.sec;
+  const rowEl = e.target.closest('.row');
+  if (!rowEl) return;
+  const i = +rowEl.dataset.i;
+  if (!state.data[sec] || !state.data[sec][i]) return;
+
+  if (e.target.classList.contains('cooling-select')) {
+    state.data[sec][i].cooling = e.target.value;
+    saveDraft();
+  } else if (e.target.classList.contains('subtype-select')) {
+    state.data[sec][i].subtype = e.target.value;
     saveDraft();
   }
 }
@@ -410,17 +448,12 @@ function onBlockKey(e){
   if (e.key !== 'Enter') return;
   if (!e.target.classList.contains('code-input')) return;
   e.preventDefault();
-  const block = e.target.closest('.block');
-  block.querySelector('.add').click();
+  e.target.closest('.block').querySelector('.add').click();
 }
 
 /* ---------- تحميل إعداد موجود ---------- */
 function loadBranchConfig(branch){
-  if (!branch) {
-    state.existing = null;
-    $('#existingInfo').textContent = '';
-    return Promise.resolve();
-  }
+  if (!branch) { state.existing = null; $('#existingInfo').textContent = ''; return Promise.resolve(); }
   $('#existingInfo').innerHTML = '<span style="opacity:.7">جارٍ تحميل الإعداد الحالي…</span>';
   return apiGet({ action:'getSetup', branch:branch })
     .then(function(d){
@@ -445,15 +478,22 @@ function applyExisting(){
   state.picked = ex.sections.map(function(s){ return s.name; });
   state.data = {};
   ex.sections.forEach(function(s){
-    state.data[s.name] = s.fridges.map(function(f){ return { code:f.code, type:f.type === 'تجميد' ? 'تجميد' : 'تبريد' }; });
-    if (!state.data[s.name].length) state.data[s.name] = [{ code:'', type:'تبريد' }];
+    state.data[s.name] = s.fridges.map(function(f){
+      /* النوع المحفوظ قديماً كان "تبريد" أو "تجميد" مباشرة.
+         الآن هيكون بالشكل "تبريد|مالتي ديك" — نفصّله */
+      const parts = String(f.type || '').split('|');
+      const cooling = (parts[0] === 'تجميد') ? 'تجميد' : 'تبريد';
+      const subtype = parts[1] || '';
+      return { code: f.code, cooling: cooling, subtype: subtype };
+    });
+    if (!state.data[s.name].length) state.data[s.name] = [{ code:'', cooling:'تبريد', subtype:'' }];
   });
   renderSecGrid();
   renderBlocks();
   updateBar();
 }
 
-function clearForm(ask){
+function clearForm(){
   state.picked = [];
   state.data = {};
   renderSecGrid();
@@ -465,7 +505,6 @@ function clearForm(ask){
 /* ---------- التحقق ---------- */
 function validate(){
   const problems = [];
-
   if (!state.branch) problems.push('اختر الفرع');
   if (!state.picked.length) problems.push('اختر قسمًا واحدًا على الأقل');
 
@@ -475,14 +514,12 @@ function validate(){
     if (!rows.length) { problems.push('القسم «' + sec + '» بدون ثلاجات'); return; }
     rows.forEach(function(r){
       const c = cleanCode(r.code);
-      /* التكرار ممنوع داخل نفس القسم فقط — نفس الرمز في قسمين مختلفين مسموح */
       const k = sec + '|||' + c.toLowerCase();
       if (seen[k]) problems.push('رمز مكرر داخل القسم «' + sec + '»: ' + c);
       seen[k] = 1;
       if (c.length > 30) problems.push('رمز طويل جدًا: ' + c.slice(0, 12) + '…');
     });
   });
-
   return problems;
 }
 
@@ -491,7 +528,12 @@ function payload(){
     return {
       name: sec,
       fridges: (state.data[sec] || [])
-        .map(function(r){ return { code: cleanCode(r.code), type: r.type || 'تبريد' }; })
+        .map(function(r){
+          const code = cleanCode(r.code);
+          /* نخزّن التبريد/التجميد والنوع مع بعض بالشكل "تبريد|مالتي ديك" */
+          const typeStr = (r.cooling || 'تبريد') + (r.subtype ? '|' + r.subtype : '');
+          return { code: code, type: typeStr };
+        })
         .filter(function(r){ return r.code; })
     };
   }).filter(function(s){ return s.fridges.length; });
@@ -514,10 +556,7 @@ function openModal(title, text, okText, action){
   modalAction = action || null;
   $('#modal').classList.add('on');
 }
-function closeModal(){
-  $('#modal').classList.remove('on');
-  modalAction = null;
-}
+function closeModal(){ $('#modal').classList.remove('on'); modalAction = null; }
 
 function askAndSubmit(){
   clearMsg();
@@ -534,7 +573,6 @@ function askAndSubmit(){
 
   let text = 'الفرع: <b>' + esc(state.branch) + '</b><br>' +
     'عدد الأقسام: <b>' + arNum(p.sections.length) + '</b> · عدد الثلاجات: <b>' + arNum(now) + '</b>';
-
   if (was) {
     text += '<br><br>سيتم استبدال الإعداد القديم (<b>' + arNum(was) + '</b> ثلاجة) بالجديد.';
     if (now < was) {
@@ -557,14 +595,13 @@ function doSubmit(){
   $('#submitBtn').innerHTML = '<span class="spin"></span> جارٍ الحفظ…';
 
   apiPost(p)
-    .then(function(res){
-      /* تحقق فعلي من السيرفر قبل ما نقول "تم" */
+    .then(function(){
       return apiGet({ action:'getSetup', branch:p.branch }).then(function(d){
         const got = d.count || 0;
         if (!d.exists || got !== p.expected) {
           throw new Error('الحفظ غير مكتمل — عدد المحفوظ في الخادم: ' + arNum(got) + ' من ' + arNum(p.expected) + ' ثلاجة');
         }
-        return { res:res, got:got, sections:(d.sections || []).length };
+        return { got:got, sections:(d.sections || []).length };
       });
     })
     .then(function(r){
@@ -615,7 +652,7 @@ function boot(){
 
   $('#branch').addEventListener('change', function(){
     const b = this.value;
-    if (state.branch && state.picked.length) saveDraft(); // مسودة الفرع القديم
+    if (state.branch && state.picked.length) saveDraft();
     state.branch = b;
     clearMsg();
     updateBar();
@@ -638,6 +675,7 @@ function boot(){
 
   $('#secGrid').addEventListener('click', onGridClick);
   $('#blocks').addEventListener('click', onBlockClick);
+  $('#blocks').addEventListener('change', onBlockChange);
   $('#blocks').addEventListener('input', onBlockInput);
   $('#blocks').addEventListener('keydown', onBlockKey);
 
@@ -650,11 +688,7 @@ function boot(){
 
   $('#submitBtn').addEventListener('click', askAndSubmit);
   $('#mCancel').addEventListener('click', closeModal);
-  $('#mOk').addEventListener('click', function(){
-    const a = modalAction;
-    closeModal();
-    if (a) a();
-  });
+  $('#mOk').addEventListener('click', function(){ const a = modalAction; closeModal(); if (a) a(); });
   $('#modal').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
 }
 
