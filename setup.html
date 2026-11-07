@@ -530,9 +530,9 @@ function payload(){
       fridges: (state.data[sec] || [])
         .map(function(r){
           const code = cleanCode(r.code);
-          /* نخزّن التبريد/التجميد والنوع مع بعض بالشكل "تبريد|مالتي ديك" */
-          const typeStr = (r.cooling || 'تبريد') + (r.subtype ? '|' + r.subtype : '');
-          return { code: code, type: typeStr };
+          const cooling = r.cooling || 'تبريد';
+          const subtype = r.subtype || '';
+          return { code: code, cooling: cooling, subtype: subtype };
         })
         .filter(function(r){ return r.code; })
     };
