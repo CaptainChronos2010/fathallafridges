@@ -121,6 +121,10 @@
     border-radius:8px; padding:4px 12px;
   }
   .type{ font-size:14px; color:var(--muted); }
+  .subtype-tag{
+    font-size:12px; color:var(--brand-dark); background:var(--brand-soft);
+    border-radius:6px; padding:2px 8px; font-weight:600;
+  }
   .state{ margin-inline-start:auto; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:999px; }
   .state.saved{ background:var(--ok-soft); color:var(--ok); }
   .state.dirty{ background:var(--warn-soft); color:var(--warn); }
@@ -350,6 +354,7 @@ const $  = (s, r) => (r || document).querySelector(s);
 const LS_LAST  = 'fathalla:last';
 const LS_USER  = 'fathalla:user';
 const LS_COUNT = 'fathalla:counts';
+const LS_DRAFT_READINGS = 'fathalla:draft:readings';
 
 const state = {
   branches: [],
@@ -514,7 +519,29 @@ function startRecording(){
 
   state.user = name;
   localStorage.setItem(LS_USER, name);
-  openDay(branch, $('#dateInput').value || todayISO());
+
+  const date = $('#dateInput').value || todayISO();
+  /* تحقق من التسجيل المكرر لنفس الفرع في نفس اليوم */
+  const b = state.branches.filter(function(x){ return x.branch === branch; })[0];
+  if (b && b.saved > 0 && date === todayISO()) {
+    const pct = Math.round(b.saved / b.fridges * 100);
+    const info = document.createElement('div');
+    info.className = 'banner';
+    info.style.marginTop = '10px';
+    info.innerHTML = '⚠ هذا الفرع سُجّل جزئياً اليوم بالفعل (<b>' + arNum(b.saved) + '</b> من <b>' + arNum(b.fridges) + '</b> ثلاجة — ' +
+      arNum(pct) + '%). ' +
+      '<button id="continueAnyway" style="margin-top:4px;border:none;background:var(--brand);color:#fff;border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:700;cursor:pointer">متابعة واستكمال</button>';
+    const existing = document.querySelector('.pick .banner');
+    if (existing) existing.remove();
+    $('#startBtn').parentNode.insertBefore(info, $('#startBtn'));
+    document.getElementById('continueAnyway').onclick = function(){
+      info.remove();
+      openDay(branch, date);
+    };
+    return;
+  }
+
+  openDay(branch, date);
 }
 
 function loadBranches(){
@@ -572,6 +599,33 @@ function openDay(branch, date){
         };
       });
       if (!state.sections.length) return renderNoFridges();
+
+      /* استرجاع مسودة قراءات محلية لو فيه */
+      const draft = loadDraftReadings(branch, date);
+      if (draft && draft.readings) {
+        let restored = 0;
+        Object.keys(draft.readings).forEach(function(k){
+          if (!state.readings[k] || !state.readings[k].status) {
+            state.readings[k] = draft.readings[k];
+            state.dirty.add(k);
+            restored++;
+          }
+        });
+        if (restored > 0) {
+          const banner = document.createElement('div');
+          banner.className = 'banner';
+          banner.innerHTML = '🔄 تم استرجاع <b>' + arNum(restored) + '</b> قراءة غير محفوظة من الجلسة السابقة. ' +
+            '<button style="border:none;background:var(--warn);color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer" id="discardDraftBtn">تجاهل</button>';
+          $('#sectionBody').prepend ? $('#sectionBody').before(banner) : $('#sectionBody').parentNode.insertBefore(banner, $('#sectionBody'));
+          document.getElementById('discardDraftBtn').onclick = function(){
+            state.dirty.clear();
+            clearDraftReadings();
+            banner.remove();
+            openDay(branch, date);
+          };
+        }
+      }
+
       state.active = firstIncomplete();
       renderChips();
       renderSection();
@@ -668,9 +722,15 @@ function renderChips(){
   box.innerHTML = state.sections.map(function(s, i){
     const st = sectionStats(s);
     const done = st.total > 0 && st.saved >= st.total;
+    const alarms = sectionAlarms(s);
+    const remaining = st.total - st.saved;
+    let extra = '';
+    if (alarms > 0 && !done) extra = ' <b style="color:var(--bad)">⚠' + arNum(alarms) + '</b>';
+    else if (done) extra = ' ✓';
+    else if (remaining > 0) extra = ' <b>(' + arNum(remaining) + ' متبقي)</b>';
     return '<button class="chip ' + (i === state.active ? 'on' : '') + (done ? ' done' : '') + '" data-i="' + i + '">' +
       '<span class="dot"></span>' + esc(s.name) +
-      ' <b>' + arNum(st.saved) + '/' + arNum(st.total) + '</b></button>';
+      ' <b>' + arNum(st.saved) + '/' + arNum(st.total) + '</b>' + extra + '</button>';
   }).join('');
   const on = box.querySelector('.chip.on');
   if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
@@ -705,10 +765,16 @@ function renderSection(){
       ? (state.dirty.has(rkey) ? 'معدّلة' : 'محفوظة ' + arabicClock(r.time))
       : 'لم تُسجَّل';
 
+    /* استخراج الموديل من f.type اللي شكله "تبريد|مالتي ديك" أو "تجميد" */
+    const typeParts = String(f.type || '').split('|');
+    const coolingLabel = typeParts[0] || f.type;
+    const subtypeLabel = typeParts[1] || '';
+
     return '<div class="card' + (over ? ' alarm' : '') + '" data-code="' + esc(f.code) + '" data-section="' + esc(sec.name) + '">' +
       '<div class="card-top">' +
         '<span class="code">' + esc(f.code) + '</span>' +
-        '<span class="type">' + esc(f.type) + '</span>' +
+        '<span class="type">' + esc(coolingLabel) + '</span>' +
+        (subtypeLabel ? '<span class="subtype-tag">' + esc(subtypeLabel) + '</span>' : '') +
         '<span class="alarm-badge"' + (over ? '' : ' hidden') + '>⚠ فوق الحد</span>' +
         '<span class="state ' + (isSaved(f.code, sec.name) ? (state.dirty.has(rkey) ? 'dirty' : 'saved') : 'none') + '">' +
           stateText + '</span>' +
@@ -909,15 +975,43 @@ function hasDirtyIn(sec){
 }
 
 /* ---------- الحفظ ---------- */
+function saveDraftReadings(){
+  if (!state.branch || !state.date) return;
+  try {
+    localStorage.setItem(LS_DRAFT_READINGS, JSON.stringify({
+      branch: state.branch,
+      date: state.date,
+      user: state.user,
+      readings: state.readings,
+      ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+function loadDraftReadings(branch, date){
+  try {
+    const raw = localStorage.getItem(LS_DRAFT_READINGS);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (d.branch === branch && d.date === date) return d;
+  } catch(e) {}
+  return null;
+}
+
+function clearDraftReadings(){
+  try { localStorage.removeItem(LS_DRAFT_READINGS); } catch(e) {}
+}
+
 function scheduleAutosave(){
   clearTimeout(state.timer);
   state.force = false;
+  saveDraftReadings(); /* حفظ فوري في localStorage عند كل تعديل */
   state.timer = setTimeout(function(){
     const sec = activeSection();
     if (!sec || state.saving) return;
     if (!hasDirtyIn(sec)) return;
     const c = collectSection(sec);
-    if (!c.rows.length || c.problems.length) return; /* الحفظ التلقائي عند اكتمال القسم فقط */
+    if (!c.rows.length || c.problems.length) return; /* الحفظ التلقائي على الخادم عند اكتمال القسم فقط */
     saveSection({ silent:true, force:true });
   }, 1800);
 }
@@ -1000,6 +1094,8 @@ function applySaved(sec, rows, time){
     cur.time = time || nowClock();
     state.dirty.delete(readingKey(r.code, sec.name));
   });
+  /* لو مفيش dirty تاني → امسح الـ draft */
+  if (!state.dirty.size) clearDraftReadings();
   renderChips();
   refreshHeader();
   document.querySelectorAll('#sectionBody .card').forEach(function(card){
