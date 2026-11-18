@@ -474,4 +474,854 @@ function apiGet(params){
   return fetchJSON(API_URL + '?t=' + Date.now() + '&' + qs, { method:'GET' });
 }
 function apiPost(payload){
-  if (!apiReady()) return Promise.reject(new Error('رابط الخادم غي
+if (!apiReady()) return Promise.reject(new Error('رابط الخادم غير مُعدّ'));
+  /* إرسال النص كطلب بسيط دون ترويسات إضافية (بدون preflight) */
+  return fetchJSON(API_URL, { method:'POST', body: JSON.stringify(payload), redirect:'follow' });
+}
+
+/* ---------- شاشات ---------- */
+function showScreen(name){
+  $('#startScreen').classList.toggle('on', name === 'start');
+  $('#workScreen').classList.toggle('on', name === 'work');
+  window.scrollTo(0, 0);
+}
+
+/* ---------- اختيار الفرع والاسم ---------- */
+function renderBranchOptions(){
+  const sel = $('#branchSelect');
+  const prev = sel.value;
+
+  if (!state.branches.length) {
+    sel.innerHTML = '<option value="">لا توجد فروع مسجّلة</option>';
+    $('#branchInfo').innerHTML = 'لا يوجد فرع مسجّل حتى الآن.';
+    updateStartState();
+    return;
+  }
+
+  sel.innerHTML = '<option value="">— اختر الفرع —</option>' +
+    state.branches.map(function(b){
+      return '<option value="' + esc(b.branch) + '">' + esc(b.branch) + '</option>';
+    }).join('');
+
+  if (prev) sel.value = prev;
+  if (!sel.value && state.branches.length === 1) sel.value = state.branches[0].branch;
+
+  updateBranchInfo();
+  updateStartState();
+}
+
+function updateBranchInfo(){
+  const val = $('#branchSelect').value;
+  const b = state.branches.filter(function(x){ return x.branch === val; })[0];
+  const info = $('#branchInfo');
+  if (!b) { info.textContent = ''; return; }
+  info.innerHTML = arNum(b.fridges) + ' ثلاجة في ' + arNum(b.sections) + ' أقسام · ' +
+    arNum(b.saved) + ' سُجّلت اليوم';
+}
+
+function updateStartState(){
+  const name = ($('#userName').value || '').trim();
+  const ok = !!$('#branchSelect').value && name.length >= 3;
+  $('#startBtn').disabled = !ok;
+}
+
+function startRecording(){
+  const branch = $('#branchSelect').value;
+  const name = ($('#userName').value || '').trim();
+  if (!branch) { toast('اختر الفرع أولًا', 'warn'); return; }
+  if (name.length < 3) { toast('أدخل اسمك (٣ أحرف على الأقل)', 'warn'); $('#userName').focus(); return; }
+
+  state.user = name;
+  localStorage.setItem(LS_USER, name);
+
+  const date = $('#dateInput').value || todayISO();
+  /* تحقق من التسجيل المكرر لنفس الفرع في نفس اليوم */
+  const b = state.branches.filter(function(x){ return x.branch === branch; })[0];
+  if (b && b.saved > 0 && date === todayISO()) {
+    const pct = Math.round(b.saved / b.fridges * 100);
+    const info = document.createElement('div');
+    info.className = 'banner';
+    info.style.marginTop = '10px';
+    info.innerHTML = '⚠ هذا الفرع سُجّل جزئياً اليوم بالفعل (<b>' + arNum(b.saved) + '</b> من <b>' + arNum(b.fridges) + '</b> ثلاجة — ' +
+      arNum(pct) + '%). ' +
+      '<button id="continueAnyway" style="margin-top:4px;border:none;background:var(--brand);color:#fff;border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:700;cursor:pointer">متابعة واستكمال</button>';
+    const existing = document.querySelector('.pick .banner');
+    if (existing) existing.remove();
+    $('#startBtn').parentNode.insertBefore(info, $('#startBtn'));
+    document.getElementById('continueAnyway').onclick = function(){
+      info.remove();
+      openDay(branch, date);
+    };
+    return;
+  }
+
+  openDay(branch, date);
+}
+
+function loadBranches(){
+  if (!apiReady()) {
+    $('#apiBanner').innerHTML = '<div class="banner">يجب إدخال رابط النشر في أعلى الكود ' +
+      '(المتغير API_URL) لتشغيل الصفحة.</div>';
+    return Promise.resolve();
+  }
+  const sel = $('#branchSelect');
+  if (!state.branches.length) sel.innerHTML = '<option value="">جارٍ التحميل…</option>';
+
+  return apiGet({ action:'getBranches', date:$('#dateInput').value || todayISO() })
+    .then(function(d){
+      console.log('[Fathalla] getBranches response:', JSON.stringify(d).slice(0, 300));
+      state.branches = d.branches || [];
+      console.log('[Fathalla] branches count:', state.branches.length);
+      renderBranchOptions();
+    })
+    .catch(function(e){
+      sel.innerHTML = '<option value="">تعذّر التحميل</option>';
+      $('#branchInfo').innerHTML =
+        '<span style="color:var(--bad);font-weight:700">خطأ: ' + esc(e.message) + '</span><br>' +
+        '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">' +
+          '<button class="btn primary" style="min-height:40px;flex:1" onclick="loadBranches()">🔄 إعادة المحاولة</button>' +
+          '<button class="btn ghost" style="min-height:40px;flex:1" onclick="clearCacheAndReload()">🗑 مسح الكاش</button>' +
+        '</div>';
+    });
+}
+
+function clearCacheAndReload(){
+  try {
+    localStorage.removeItem(LS_LAST);
+    localStorage.removeItem(LS_USER);
+    localStorage.removeItem(LS_DRAFT_READINGS);
+  } catch(e) {}
+  location.reload();
+}
+
+/* ---------- فتح يوم ---------- */
+function openDay(branch, date){
+  state.branch = branch;
+  state.date = date;
+  state.dirty.clear();
+  state.force = false;
+  localStorage.setItem(LS_LAST, JSON.stringify({ branch:branch, date:date, user:state.user, ts:Date.now() }));
+
+  showScreen('work');
+  $('#wbBranch').textContent = branch;
+  $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(date) + ' · جارٍ التحميل…';
+  $('#sectionChips').innerHTML = '';
+  $('#sectionBody').innerHTML = '<div class="skel"></div><div class="skel"></div>';
+  setActionInfo('…');
+  hideProblems();
+
+  return apiGet({ action:'getDay', branch:branch, date:date })
+    .then(function(d){
+      state.sections = d.sections || [];
+      state.readings = {};
+      /* الـ API بيرجع readings كـ array: [{section, code, temp, status, note, time}, ...] */
+      const rawList = Array.isArray(d.readings) ? d.readings : [];
+      rawList.forEach(function(item){
+        if (!item || !item.code || !item.status) return;
+        const secName = item.section || '';
+        const k = readingKey(item.code, secName);
+        state.readings[k] = {
+          temp: (item.temp === null || item.temp === '' || item.temp === undefined) ? '' : String(item.temp),
+          status: item.status || '',
+          note: item.note || '',
+          time: item.time || ''
+        };
+      });
+      if (!state.sections.length) return renderNoFridges();
+
+      /* استرجاع مسودة قراءات محلية لو فيه */
+      const draft = loadDraftReadings(branch, date);
+      if (draft && draft.readings) {
+        let restored = 0;
+        Object.keys(draft.readings).forEach(function(k){
+          if (!state.readings[k] || !state.readings[k].status) {
+            state.readings[k] = draft.readings[k];
+            state.dirty.add(k);
+            restored++;
+          }
+        });
+        if (restored > 0) {
+          const banner = document.createElement('div');
+          banner.className = 'banner';
+          banner.innerHTML = '🔄 تم استرجاع <b>' + arNum(restored) + '</b> قراءة غير محفوظة من الجلسة السابقة. ' +
+            '<button style="border:none;background:var(--warn);color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer" id="discardDraftBtn">تجاهل</button>';
+          $('#sectionBody').prepend ? $('#sectionBody').before(banner) : $('#sectionBody').parentNode.insertBefore(banner, $('#sectionBody'));
+          document.getElementById('discardDraftBtn').onclick = function(){
+            state.dirty.clear();
+            clearDraftReadings();
+            banner.remove();
+            openDay(branch, date);
+          };
+        }
+      }
+
+      state.active = firstIncomplete();
+      renderChips();
+      renderSection();
+      refreshHeader();
+    })
+    .catch(function(e){
+      $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(date);
+      $('#sectionBody').innerHTML =
+        '<div class="empty">تعذّر تحميل بيانات الفرع<br><small>' + esc(e.message) + '</small><br><br>' +
+        '<button class="btn primary" style="max-width:220px;margin:auto" id="retryDay">إعادة المحاولة</button></div>';
+      const b = $('#retryDay');
+      if (b) b.onclick = function(){ openDay(branch, date); };
+    });
+}
+
+function renderNoFridges(){
+  $('#sectionChips').innerHTML = '';
+  $('#progressBar').style.width = '0%';
+  $('#sectionBody').innerHTML =
+    '<div class="empty">لا توجد ثلاجات مسجّلة لهذا الفرع.</div>';
+  $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(state.date);
+  setActionInfo('لا توجد ثلاجات');
+  $('#saveBtn').disabled = true;
+  $('#nextBtn').disabled = true;
+  $('#prevBtn').disabled = true;
+}
+
+/* ---------- الحالة ---------- */
+/* مفتاح داخلي يجمع اسم القسم والكود — يحل مشكلة نفس الكود في أكثر من قسم */
+function readingKey(code, sectionName){
+  const sec = sectionName !== undefined ? sectionName : (activeSection() ? activeSection().name : '');
+  return sec + '|||' + code;
+}
+function readingOf(code, sectionName){
+  const k = readingKey(code, sectionName);
+  if (!state.readings[k]) state.readings[k] = { temp:'', status:'', note:'', time:'' };
+  return state.readings[k];
+}
+function statusByLabel(label){
+  for (let i = 0; i < STATUSES.length; i++) if (STATUSES[i].label === label) return STATUSES[i];
+  return label ? { key:'other', label:label, tone:'info', needsTemp:true } : null;
+}
+function isSaved(code, sectionName){
+  const r = state.readings[readingKey(code, sectionName)];
+  return !!(r && r.status);
+}
+function sectionStats(sec){
+  let total = sec.fridges.length, saved = 0;
+  sec.fridges.forEach(function(f){ if (isSaved(f.code, sec.name)) saved++; });
+  return { total: total, saved: saved };
+}
+function totalStats(){
+  let total = 0, saved = 0;
+  state.sections.forEach(function(s){
+    const st = sectionStats(s);
+    total += st.total; saved += st.saved;
+  });
+  return { total: total, saved: saved };
+}
+function firstIncomplete(){
+  for (let i = 0; i < state.sections.length; i++) {
+    const st = sectionStats(state.sections[i]);
+    if (st.saved < st.total) return i;
+  }
+  return 0;
+  }
+function activeSection(){
+  return state.sections[state.active] || null;
+}
+
+/* ---------- الرسم ---------- */
+function refreshHeader(){
+  const t = totalStats();
+  const pct = t.total ? Math.round(t.saved / t.total * 100) : 0;
+  const sec = activeSection();
+  const st = sec ? sectionStats(sec) : { total:0, saved:0 };
+  let alarms = 0;
+  state.sections.forEach(function(s){ alarms += sectionAlarms(s); });
+  $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(state.date) + ' · ' +
+    arNum(t.saved) + ' من ' + arNum(t.total) + ' ثلاجة' +
+    (alarms ? ' · ⚠ ' + arNum(alarms) + ' فوق الحد' : '');
+  $('#progressBar').style.width = pct + '%';
+  setActionInfo(sec
+    ? 'القسم «' + sec.name + '» — ' + arNum(st.saved) + ' من ' + arNum(st.total) + ' مسجّلة'
+    : '');
+  $('#saveBtn').disabled = !sec;
+  $('#nextBtn').disabled = !sec;
+  $('#prevBtn').disabled = !sec || state.active === 0;
+  document.title = arNum(t.saved) + '/' + arNum(t.total) + ' · ' + state.branch;
+}
+
+function renderChips(){
+  const box = $('#sectionChips');
+  box.innerHTML = state.sections.map(function(s, i){
+    const st = sectionStats(s);
+    const done = st.total > 0 && st.saved >= st.total;
+    const alarms = sectionAlarms(s);
+    const remaining = st.total - st.saved;
+    let extra = '';
+    if (alarms > 0 && !done) extra = ' <b style="color:var(--bad)">⚠' + arNum(alarms) + '</b>';
+    else if (done) extra = ' ✓';
+    else if (remaining > 0) extra = ' <b>(' + arNum(remaining) + ' متبقي)</b>';
+    return '<button class="chip ' + (i === state.active ? 'on' : '') + (done ? ' done' : '') + '" data-i="' + i + '">' +
+      '<span class="dot"></span>' + esc(s.name) +
+      ' <b>' + arNum(st.saved) + '/' + arNum(st.total) + '</b>' + extra + '</button>';
+  }).join('');
+  const on = box.querySelector('.chip.on');
+  if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
+}
+
+function renderSection(){
+  const sec = activeSection();
+  const body = $('#sectionBody');
+  if (!sec) { body.innerHTML = ''; return; }
+
+  const st0 = sectionStats(sec);
+  const al0 = sectionAlarms(sec);
+  const head = '<div class="sec-title"><b>' + esc(sec.name) + '</b>' +
+    '<span>' + arNum(st0.saved) + ' من ' + arNum(st0.total) + ' مسجّلة' +
+    (al0 ? ' · <b style="color:var(--bad)">' + arNum(al0) + ' فوق الحد</b>' : '') +
+    '</span></div>';
+
+  body.innerHTML = head + sec.fridges.map(function(f, i){
+    const r = readingOf(f.code, sec.name);
+    const st = statusByLabel(r.status);
+    const coolingType = String(f.type || '').split('|')[0];
+    const limit = ALARM_ABOVE[coolingType];
+    const val = parseTemp(r.temp);
+    const over = (limit !== undefined && val !== null && val > limit);
+
+    const statusBtns = (st && st.key === 'other' ? STATUSES.concat([st]) : STATUSES).map(function(s){
+      return '<button type="button" class="seg-btn ' + s.tone + (r.status === s.label ? ' on' : '') +
+        '" data-act="status" data-label="' + esc(s.label) + '">' + esc(s.label) + '</button>';
+    }).join('');
+
+    const rkey = readingKey(f.code, sec.name);
+    const stateText = isSaved(f.code, sec.name)
+      ? (state.dirty.has(rkey) ? 'معدّلة' : 'محفوظة ' + arabicClock(r.time))
+      : 'لم تُسجَّل';
+
+    /* استخراج الموديل من f.type اللي شكله "تبريد|مالتي ديك" أو "تجميد" */
+    const typeParts = String(f.type || '').split('|');
+    const coolingLabel = typeParts[0] || f.type;
+    const subtypeLabel = typeParts[1] || '';
+
+    return '<div class="card' + (over ? ' alarm' : '') + '" data-code="' + esc(f.code) + '" data-section="' + esc(sec.name) + '">' +
+
+      /* ===== رأس الكارت ===== */
+      '<div class="card-top">' +
+        /* سطر ١: الكود + الحالة */
+        '<div class="card-top-row1">' +
+          '<span class="code">' + esc(f.code) + '</span>' +
+          (over ? '<span class="alarm-badge">⚠ فوق الحد</span>' : '') +
+          '<span class="state ' + (isSaved(f.code, sec.name) ? (state.dirty.has(rkey) ? 'dirty' : 'saved') : 'none') + '">' +
+            stateText + '</span>' +
+        '</div>' +
+        /* سطر ٢: نوع التبريد + الموديل */
+        '<div class="card-top-row2">' +
+          '<span class="type">' + esc(coolingLabel) + '</span>' +
+          (subtypeLabel ? '<span class="subtype-tag">' + esc(subtypeLabel) + '</span>' : '<span style="font-size:11px;color:var(--muted)">بدون موديل</span>') +
+        '</div>' +
+      '</div>' +
+
+      /* ===== جسم الكارت أفقي: الحالة يمين، الحرارة شمال ===== */
+      '<div class="card-body">' +
+
+        /* الحالة — يمين (أول في RTL) */
+        '<div class="status-col">' +
+          '<div class="flabel">الحالة</div>' +
+          '<div class="seg">' + statusBtns + '</div>' +
+        '</div>' +
+
+        /* الحرارة — شمال (ثاني في RTL) */
+        '<div class="temp-col">' +
+          '<div class="flabel">الحرارة</div>' +
+          '<div class="temp-row">' +
+            '<input class="temp" dir="ltr" inputmode="decimal" enterkeyhint="done" autocomplete="off" ' +
+              'value="' + esc(r.temp) + '" placeholder="°م">' +
+            '<button type="button" class="sign" data-act="sign" aria-label="سالب">−</button>' +
+          '</div>' +
+          '<div class="hint"></div>' +
+        '</div>' +
+
+      '</div>' +
+
+      '<details class="note"' + (r.note ? ' open' : '') + '>' +
+        '<summary>ملاحظة (اختياري)</summary>' +
+        '<input class="note-input" maxlength="120" value="' + esc(r.note) + '">' +
+      '</details>' +
+    '</div>';
+  }).join('');
+
+  body.querySelectorAll('.card').forEach(function(card){
+    updateHint(card);
+  });
+  refreshHeader();
+}
+
+function updateHint(card){
+  const code = card.dataset.code;
+  const rkey = cardRkey(card);
+  const sec = card.dataset.section;
+  const f = (state.sections.filter(function(s){ return s.name === sec; })[0] || { fridges:[] })
+              .fridges.filter(function(x){ return x.code === code; })[0];
+  const r = state.readings[rkey] || readingOf(code, sec);
+  const hint = card.querySelector('.hint');
+  if (!hint) return;
+
+  const val = parseTemp(r.temp);
+  const limit = f ? ALARM_ABOVE[String(f.type || '').split('|')[0]] : undefined;
+  const over = (limit !== undefined && val !== null && val > limit);
+
+  card.classList.toggle('alarm', over);
+  const badge = card.querySelector('.alarm-badge');
+  if (badge) badge.hidden = !over;
+
+  hint.classList.remove('over');
+
+  if (!String(r.temp).trim()) {
+    hint.textContent = (statusByLabel(r.status) && !statusByLabel(r.status).needsTemp)
+      ? 'هذه الحالة لا تتطلب درجة حرارة' : 'استخدم − للقيم السالبة';
+  } else if (val === null) {
+    hint.textContent = 'القراءة غير صحيحة';
+    hint.classList.add('over');
+  } else if (over) {
+    hint.innerHTML = '⚠ تجاوز الحد المسموح (' + num(limit) + ')';
+    hint.classList.add('over');
+  } else {
+    hint.textContent = '✓ داخل الحد';
+  }
+}
+
+function sectionAlarms(sec){
+  let n = 0;
+  sec.fridges.forEach(function(f){
+    const r = state.readings[readingKey(f.code, sec.name)];
+    if (!r) return;
+    const v = parseTemp(r.temp);
+    const lim = ALARM_ABOVE[String(f.type || '').split('|')[0]];
+    if (lim !== undefined && v !== null && v > lim) n++;
+  });
+  return n;
+}
+
+function alarmsIn(rows){
+  return rows.filter(function(r){
+    const lim = ALARM_ABOVE[String(r.type || '').split('|')[0]];
+    return lim !== undefined && r.temp !== null && r.temp !== undefined && r.temp > lim;
+  });
+}
+
+function openConfirm(over){
+  $('#confirmText').innerHTML =
+    'يوجد ' + arNum(over.length) + ' قراءة متجاوزة للحد: ' +
+    over.map(function(r){ return '«' + esc(r.code) + '» ' + num(r.temp); }).join('، ') +
+    '<br>يمكن المتابعة وحفظها كما هي.';
+  $('#confirmModal').classList.add('on');
+}
+
+function paintCardState(rkey){
+  /* نبحث عن الكارد عن طريق data-code + data-section بدل rkey مباشرة */
+  const parts = rkey.split('|||');
+  const secName = parts[0];
+  const code = parts.slice(1).join('|||');
+  const card = document.querySelector(
+    '#sectionBody .card[data-code="' + code.replace(/"/g,'\\"') + '"][data-section="' + secName.replace(/"/g,'\\"') + '"]'
+  );
+  if (!card) return;
+  const el = card.querySelector('.state');
+  const r = state.readings[rkey];
+  if (!r || !r.status) { el.className = 'state none'; el.textContent = 'لم تُسجَّل'; return; }
+  if (state.dirty.has(rkey)) { el.className = 'state dirty'; el.textContent = 'معدّلة'; }
+  else { el.className = 'state saved'; el.textContent = 'محفوظة ' + arabicClock(r.time); }
+}
+
+function setActionInfo(txt){ $('#abInfo').textContent = txt || ''; }
+
+function cardRkey(card){
+  return readingKey(card.dataset.code, card.dataset.section);
+}
+
+/* ---------- تعديل القيم ---------- */
+function onInput(e){
+  const input = e.target;
+  const card = input.closest('.card');
+  if (!card) return;
+  const rkey = cardRkey(card);
+  const r = state.readings[rkey] || (state.readings[rkey] = { temp:'', status:'', note:'', time:'' });
+
+  if (input.classList.contains('temp')) {
+    r.temp = input.value;
+    state.dirty.add(rkey);
+    paintCardState(rkey);
+    updateHint(card);
+    scheduleAutosave();
+  } else if (input.classList.contains('note-input')) {
+    r.note = input.value;
+    state.dirty.add(rkey);
+    paintCardState(rkey);
+    scheduleAutosave();
+  }
+}
+
+function onClick(e){
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const card = btn.closest('.card');
+  if (!card) return;
+  const rkey = cardRkey(card);
+  const r = state.readings[rkey] || (state.readings[rkey] = { temp:'', status:'', note:'', time:'' });
+
+  if (btn.dataset.act === 'status') {
+    const label = btn.dataset.label;
+    if (!label) return;
+    r.status = label;
+    state.dirty.add(rkey);
+    card.querySelectorAll('.seg-btn').forEach(function(b){
+      b.classList.toggle('on', b.dataset.label === label);
+    });
+    paintCardState(rkey);
+    updateHint(card);
+    const needs = statusByLabel(label) && statusByLabel(label).needsTemp;
+    const input = card.querySelector('.temp');
+    if (needs && !String(r.temp).trim()) input.focus();
+    scheduleAutosave();
+  }
+
+  if (btn.dataset.act === 'sign') {
+    const input = card.querySelector('.temp');
+    const v = input.value.trim();
+    input.value = !v ? '-' : (v.charAt(0) === '-' ? v.slice(1) : '-' + v);
+    r.temp = input.value;
+    state.dirty.add(rkey);
+    paintCardState(rkey);
+    updateHint(card);
+    scheduleAutosave();
+  }
+}
+  /* ---------- تجميع بيانات القسم ---------- */
+function collectSection(sec){
+  const rows = [];
+  const problems = [];
+  sec.fridges.forEach(function(f){
+    const r = readingOf(f.code, sec.name);
+    const st = statusByLabel(r.status);
+    const tempStr = String(r.temp === null || r.temp === undefined ? '' : r.temp).trim();
+
+    if (!r.status) { problems.push(f.code + ': لم تختر الحالة بعد'); return; }
+    if (st && st.needsTemp && !tempStr) { problems.push(f.code + ': لم تكتب درجة الحرارة'); return; }
+    if (tempStr) {
+      const n = parseTemp(tempStr);
+      if (n === null) { problems.push(f.code + ': الرقم المكتوب غير صحيح'); return; }
+      rows.push({ code:f.code, type:f.type, temp:n, status:r.status, note:(r.note || '').trim() });
+    } else {
+      rows.push({ code:f.code, type:f.type, temp:null, status:r.status, note:(r.note || '').trim() });
+    }
+  });
+  return { rows:rows, problems:problems };
+}
+
+function hasDirtyIn(sec){
+  return sec.fridges.some(function(f){ return state.dirty.has(readingKey(f.code, sec.name)); });
+}
+
+/* ---------- الحفظ ---------- */
+function saveDraftReadings(){
+  if (!state.branch || !state.date) return;
+  try {
+    localStorage.setItem(LS_DRAFT_READINGS, JSON.stringify({
+      branch: state.branch,
+      date: state.date,
+      user: state.user,
+      readings: state.readings,
+      ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+function loadDraftReadings(branch, date){
+  try {
+    const raw = localStorage.getItem(LS_DRAFT_READINGS);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (d.branch === branch && d.date === date) return d;
+  } catch(e) {}
+  return null;
+}
+
+function clearDraftReadings(){
+  try { localStorage.removeItem(LS_DRAFT_READINGS); } catch(e) {}
+}
+
+function scheduleAutosave(){
+  clearTimeout(state.timer);
+  state.force = false;
+  saveDraftReadings(); /* حفظ فوري في localStorage عند كل تعديل */
+  state.timer = setTimeout(function(){
+    const sec = activeSection();
+    if (!sec || state.saving) return;
+    if (!hasDirtyIn(sec)) return;
+    const c = collectSection(sec);
+    if (!c.rows.length || c.problems.length) return; /* الحفظ التلقائي على الخادم عند اكتمال القسم فقط */
+    saveSection({ silent:true, force:true });
+  }, 1800);
+}
+
+function saveSection(opts){
+  opts = opts || {};
+  const sec = activeSection();
+  if (!sec || state.saving) return Promise.resolve();
+
+  const c = collectSection(sec);
+  if (!c.rows.length) { toast('لا توجد قراءات مكتملة في هذا القسم', 'warn'); return Promise.resolve(); }
+  if (c.problems.length && !opts.force) {
+    showProblems(c.problems, sec, c.rows.length);
+    return Promise.resolve();
+  }
+
+  const over = alarmsIn(c.rows);
+  if (over.length && !opts.confirmed && !opts.silent) {
+    openConfirm(over);
+    return Promise.resolve();
+  }
+  hideProblems();
+  state.force = false;
+  state.saving = true;
+  $('#saveBtn').textContent = 'جارٍ الحفظ…';
+
+  const payload = {
+    action:'saveSection', branch:state.branch, date:state.date, by:state.user,
+    section:sec.name, readings:c.rows
+  };
+
+  return apiPost(payload)
+    .then(function(res){ applySaved(sec, c.rows, res.time); return res; })
+    .catch(function(err){
+      /* قد يكون الحفظ قد تم دون وصول الرد — نتحقق من الخادم */
+      return verifySaved(sec, c.rows).then(function(ok){
+        if (!ok) throw err;
+        applySaved(sec, c.rows, nowClock());
+        return { saved:c.rows.length, time:nowClock() };
+      });
+    })
+    .then(function(res){
+      if (!opts.silent) {
+        toast('تم حفظ «' + sec.name + '» ✓', 'ok');
+      }
+    })
+    .catch(function(err){
+      toast('تعذّر الحفظ: ' + err.message + ' — أعد المحاولة', 'bad');
+      const card = document.querySelector('#sectionBody .card');
+      if (card) card.scrollIntoView({ behavior:'smooth', block:'center' });
+    })
+    .then(function(){
+      state.saving = false;
+      $('#saveBtn').textContent = 'حفظ القسم';
+      refreshHeader();
+    });
+}
+
+function verifySaved(sec, rows){
+  return apiGet({ action:'getDay', branch:state.branch, date:state.date })
+    .then(function(d){
+      const saved = d.readings || {};
+      return rows.every(function(r){
+        const s = saved[r.code];
+        if (!s) return false;
+        if (s.status !== r.status) return false;
+        const a = parseTemp(s.temp);
+        return r.temp === null ? a === null : a === r.temp;
+      });
+    })
+    .catch(function(){ return false; });
+}
+
+function applySaved(sec, rows, time){
+  rows.forEach(function(r){
+    const cur = readingOf(r.code, sec.name);
+    cur.temp = r.temp === null ? '' : String(r.temp);
+    cur.status = r.status;
+    cur.note = r.note;
+    cur.time = time || nowClock();
+    state.dirty.delete(readingKey(r.code, sec.name));
+  });
+  /* لو مفيش dirty تاني → امسح الـ draft */
+  if (!state.dirty.size) clearDraftReadings();
+  renderChips();
+  refreshHeader();
+  document.querySelectorAll('#sectionBody .card').forEach(function(card){
+    paintCardState(cardRkey(card));
+  });
+  const st = sectionStats(sec);
+  const head = document.querySelector('#sectionBody .sec-title span');
+  if (head) head.textContent = arNum(st.saved) + ' من ' + arNum(st.total) + ' مسجّلة';
+}
+
+function showProblems(problems, sec, readyCount){
+  const box = $('#problems');
+  /* تحويل الرسائل التقنية لكلام عادي */
+  const msgs = problems.slice(0, 6).map(function(p){
+    return p
+      .replace(/:\s*اختر الحالة$/,    ': لم تختر الحالة بعد')
+      .replace(/:\s*اكتب درجة الحرارة$/, ': لم تكتب درجة الحرارة')
+      .replace(/:\s*القراءة غير صحيحة$/, ': الرقم المكتوب غير صحيح');
+  });
+  const extra = problems.length > 6 ? ' وغيرها' : '';
+  box.innerHTML = '<b>' + arNum(problems.length) + ' ثلاجة ناقصة في هذا القسم</b><ul>' +
+    msgs.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') +
+    (extra ? '<li>' + extra + '</li>' : '') +
+    '</ul>' +
+    (readyCount > 0
+      ? '<div style="margin-top:8px;font-weight:600">اضغط حفظ مرة ثانية لحفظ ' + arNum(readyCount) + ' ثلاجة مكتملة فقط.</div>'
+      : '');
+  box.style.display = 'block';
+  $('#saveBtn').textContent = readyCount > 0 ? 'حفظ المكتمل (' + arNum(readyCount) + ')' : 'حفظ القسم';
+  state.force = readyCount > 0;
+}
+function hideProblems(){
+  const box = $('#problems');
+  box.style.display = 'none';
+  box.innerHTML = '';
+  if (!state.saving) $('#saveBtn').textContent = 'حفظ القسم';
+}
+
+/* ---------- التنقل بين الأقسام ---------- */
+function goSection(i){
+  if (i < 0 || i >= state.sections.length) return;
+  const cur = activeSection();
+  const after = function(){
+    state.active = i;
+    hideProblems();
+    renderChips();
+    renderSection();
+    window.scrollTo(0, 0);
+  };
+  if (cur && hasDirtyIn(cur)) {
+    const c = collectSection(cur);
+    if (c.rows.length) {
+      saveSection({ silent:true, force:true }).then(after);
+      return;
+    }
+  }
+  after();
+/* ---------- الأحداث ---------- */
+function bind(){
+  $('#dateInput').addEventListener('change', function(){
+    localStorage.setItem(LS_COUNT, this.value);
+    loadBranches();
+  });
+  $('#refreshBtn').addEventListener('click', function(){ loadBranches(); });
+
+  $('#branchSelect').addEventListener('change', function(){
+    updateBranchInfo();
+    updateStartState();
+  });
+  $('#userName').addEventListener('input', updateStartState);
+  $('#userName').addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && !$('#startBtn').disabled) startRecording();
+  });
+  $('#startBtn').addEventListener('click', startRecording);
+
+  $('#backBtn').addEventListener('click', function(){
+    if (state.dirty.size) {
+      const sec = activeSection();
+      if (sec) saveSection({ silent:true, force:true });
+    }
+    showScreen('start');
+    loadBranches();
+  });
+
+  $('#pickDateBtn').addEventListener('click', function(){
+    const el = document.createElement('input');
+    el.type = 'date';
+    el.value = state.date;
+    el.max = todayISO();
+    el.style.position = 'fixed'; el.style.opacity = '0'; el.style.pointerEvents = 'none';
+    document.body.appendChild(el);
+    el.addEventListener('change', function(){
+      if (el.value && el.value !== state.date) openDay(state.branch, el.value);
+      setTimeout(function(){ el.remove(); }, 100);
+    });
+    if (el.showPicker) { try { el.showPicker(); } catch (err) { el.focus(); el.click(); } }
+    else { el.focus(); el.click(); }
+  });
+
+  $('#sectionChips').addEventListener('click', function(e){
+    const chip = e.target.closest('.chip');
+    if (chip) goSection(+chip.dataset.i);
+  });
+
+  $('#sectionBody').addEventListener('input', onInput);
+  $('#sectionBody').addEventListener('click', onClick);
+
+  $('#saveBtn').addEventListener('click', function(){
+    if (state.force) { saveSection({ force:true }); return; }
+    const sec = activeSection();
+    if (!sec) return;
+    const c = collectSection(sec);
+    if (c.problems.length) { showProblems(c.problems, sec, c.rows.length); return; }
+    saveSection({ force:true });
+  });
+
+  $('#prevBtn').addEventListener('click', function(){
+    if (state.active > 0) goSection(state.active - 1);
+  });
+
+  $('#confirmCancel').addEventListener('click', function(){
+    $('#confirmModal').classList.remove('on');
+  });
+  $('#confirmOk').addEventListener('click', function(){
+    $('#confirmModal').classList.remove('on');
+    saveSection({ force:true, confirmed:true });
+  });
+
+  $('#nextBtn').addEventListener('click', function(){
+    if (state.active < state.sections.length - 1) {
+      goSection(state.active + 1);
+    } else {
+      const t = totalStats();
+      toast(t.saved >= t.total
+        ? 'تم ✓ تسجيل جميع الثلاجات (' + arNum(t.total) + ') اليوم'
+        : 'هذا آخر قسم — تبقّى ' + arNum(t.total - t.saved) + ' ثلاجة', t.saved >= t.total ? 'ok' : 'warn');
+    }
+  });
+
+  window.addEventListener('beforeunload', function(e){
+    if (state.dirty.size) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  window.addEventListener('online', function(){
+    if (state.dirty.size) scheduleAutosave();
+  });
+}
+
+/* ---------- البداية ---------- */
+function boot(){
+  const today = todayISO();
+  const dateEl = $('#dateInput');
+  dateEl.value = today;
+  dateEl.max = today;
+
+  const savedUser = localStorage.getItem(LS_USER) || '';
+  $('#userName').value = savedUser;
+
+  bind();
+
+  let last = null;
+  try { last = JSON.parse(localStorage.getItem(LS_LAST) || 'null'); } catch (e) {}
+
+  loadBranches().then(function(){
+    const hasLast = last && last.branch && state.branches.some(function(b){ return b.branch === last.branch; });
+
+    if (hasLast) {
+      /* يوم جديد: نختار الفرع السابق تلقائيًا ولا نفتح التسجيل */
+      $('#branchSelect').value = last.branch;
+      updateBranchInfo();
+      updateStartState();
+    }
+
+    if (hasLast && last.date === today && last.user) {
+      state.user = last.user;
+      $('#userName').value = last.user;
+      openDay(last.branch, today);
+    }
+  });
+}
+document.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
