@@ -538,11 +538,22 @@ function payload(){
     };
   }).filter(function(s){ return s.fridges.length; });
 
+  /* إرسال الموديل مدمجاً مع نوع التبريد: "تبريد|مالتي ديك" أو "تجميد|غرفة ( رئيسية )" */
+  const sectionsWithType = sections.map(function(sec){
+    return {
+      name: sec.name,
+      fridges: sec.fridges.map(function(f){
+        const typeStr = f.subtype ? (f.cooling + '|' + f.subtype) : f.cooling;
+        return { code: f.code, type: typeStr };
+      })
+    };
+  });
+
   return {
     action: 'submitSetup',
     branch: state.branch,
-    sections: sections,
-    expected: sections.reduce(function(a, s){ return a + s.fridges.length; }, 0)
+    sections: sectionsWithType,
+    expected: sectionsWithType.reduce(function(a, s){ return a + s.fridges.length; }, 0)
   };
 }
 
