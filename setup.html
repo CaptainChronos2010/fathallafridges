@@ -44,7 +44,6 @@
   .card-head h2{ margin:0; font-size:15px; }
   .card-body{ padding:14px; }
 
-  label.lbl{ display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; }
   select, input[type="text"]{
     width:100%; min-height:48px; padding:0 12px; border:1px solid var(--line);
     border-radius:12px; background:var(--card); outline:none;
@@ -55,7 +54,7 @@
   .sec-check{
     display:flex; align-items:center; gap:8px; padding:11px 10px; border:1.5px solid var(--line);
     border-radius:12px; cursor:pointer; font-size:13px; font-weight:600; color:var(--muted);
-    background:var(--card); text-align:right; min-height:48px;
+    background:var(--card); min-height:48px;
   }
   .sec-check .box{ width:18px; height:18px; border-radius:6px; border:1.5px solid var(--line); flex:0 0 auto; display:grid; place-items:center; font-size:11px; color:#fff; }
   .sec-check.on{ border-color:var(--brand); background:var(--brand-soft); color:var(--brand-dark); }
@@ -64,12 +63,12 @@
   .block{ border:1px solid var(--line); border-radius:14px; margin-top:12px; overflow:hidden; }
   .block-head{ display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--brand-soft); }
   .block-head b{ font-size:13.5px; color:var(--brand-dark); flex:1; }
-  .block-head .cnt{ font-size:11.5px; color:var(--brand-dark); background:#fff3; border-radius:999px; padding:2px 8px; }
+  .block-head .cnt{ font-size:11.5px; color:var(--brand-dark); background:rgba(255,255,255,.4); border-radius:999px; padding:2px 8px; }
   .add{ border:none; background:var(--brand); color:#fff; border-radius:9px; padding:7px 11px; font-size:12.5px; font-weight:700; min-height:34px; }
 
   .rows{ padding:10px 12px; display:flex; flex-direction:column; gap:12px; }
 
-  /* كل صف: الكود + زرار الحذف في سطر، والـ selects تحته */
+  /* صف ثلاجة: الكود + حذف في سطر، dropdowns تحته */
   .row{ display:flex; flex-direction:column; gap:7px; }
   .row-top{ display:flex; align-items:center; gap:8px; }
   .row-top input[type="text"]{
@@ -79,18 +78,16 @@
   .row-top input[type="text"]:focus{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
   .row-top input[type="text"]::placeholder{ font-size:12px; color:var(--muted); }
 
-  /* ===== dropdown النوع ===== */
   .row-selects{ display:flex; gap:7px; }
   .row-selects select{
     flex:1; min-width:0; min-height:44px; padding:0 10px; border-radius:10px;
-    font-size:13px;
-    background:var(--card); border:1.5px solid var(--line); color:var(--ink); outline:none;
+    font-size:13px; background:var(--card); border:1.5px solid var(--line); outline:none;
   }
   .row-selects select:focus{ border-color:var(--brand); box-shadow:0 0 0 2px var(--brand-soft); }
 
   .del{
     width:44px; height:46px; flex:0 0 44px; border:1.5px solid var(--line); background:var(--card);
-    color:var(--bad); border-radius:11px; font-size:16px; line-height:1;
+    color:var(--bad); border-radius:11px; font-size:16px;
   }
   .del:active{ background:var(--bad-soft); }
   .empty-row{ font-size:12.5px; color:var(--muted); text-align:center; padding:8px; }
@@ -112,6 +109,8 @@
   .msg.ok{ display:block; background:var(--ok-soft); color:var(--ok); border:1px solid var(--ok); }
   .msg.warn{ display:block; background:var(--warn-soft); color:var(--warn); border:1px solid var(--warn); }
   .msg ul{ margin:6px 0 0; padding-inline-start:16px; }
+
+  .banner{ background:var(--warn-soft); color:var(--warn); border:1px solid var(--warn); border-radius:12px; padding:10px 12px; font-size:13px; margin-bottom:12px; }
 
   .result{ text-align:center; padding:26px 18px; }
   .result .tick{ width:64px; height:64px; border-radius:50%; background:var(--ok-soft); color:var(--ok); font-size:32px; display:grid; place-items:center; margin:0 auto 12px; }
@@ -141,10 +140,8 @@
   <div class="card" id="formCard">
     <div class="card-head"><div class="num">١</div><h2>الفرع</h2></div>
     <div class="card-body">
-      <label class="lbl" for="branch">اسم الفرع</label>
-      <select id="branch">
-        <option value="">-- اختر الفرع --</option>
-      </select>
+      <label style="display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px" for="branch">اسم الفرع</label>
+      <select id="branch"><option value="">-- اختر الفرع --</option></select>
       <div id="existingInfo" style="font-size:12.5px;color:var(--muted);margin-top:8px"></div>
     </div>
   </div>
@@ -152,7 +149,7 @@
   <div class="card" id="sectionsCard">
     <div class="card-head"><div class="num">٢</div><h2>الأقسام</h2></div>
     <div class="card-body">
-      <label class="lbl">اختر الأقسام الموجودة في الفرع</label>
+      <label style="display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px">اختر الأقسام الموجودة في الفرع</label>
       <div class="grid" id="secGrid"></div>
     </div>
   </div>
@@ -192,9 +189,6 @@
 </div>
 
 <script>
-/* ============================================================
-   ⚙️  الإعدادات
-   ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbycG7Fld1-DO3kCcW-GotiiSPkzHpAwNL0lpmdfLpE8_bB_nh-mp8egD0cYcjPIIICI_A/exec";
 
 const BRANCHES = [
@@ -211,39 +205,15 @@ const SECTIONS = [
   'الحلويات','الحلواني و الخباز'
 ];
 
-/* ============================================================
-   ⚙️  أنواع الثلاجات
-   - عشان تضيف نوع جديد: ضيف الاسم بين الأقواس مثل: 'اسم النوع'
-   - عشان تشيل نوع: احذف السطر بتاعه
-   - الأنواع دي متاحة للتبريد والتجميد كلهم
-   ============================================================ */
 const FRIDGE_SUBTYPES = [
-  'مالتي ديك',
-  'بروموشن',
-  'غرفة ( رئيسية )',
-  'غرفة ( معمل قسم )',
-  'عرض',
-  'اندرتيبول',
-  'فريزر افقي',
-  'كومبي'
+  'مالتي ديك','بروموشن','غرفة ( رئيسية )','غرفة ( معمل قسم )','عرض',
+  'اندرتيبول','فريزر افقي','كومبي'
 ];
 
-const CODE_PLACEHOLDER = 'رمز الثلاجة مثال : A';
-
-/* ============================================================
-   لا حاجة لتعديل ما يلي
-   ============================================================ */
 const $ = (s, r) => (r || document).querySelector(s);
 const LS_DRAFT = 'fathalla:setup:draft';
 
-const state = {
-  branch: '',
-  existing: null,
-  picked: [],
-  data: {},
-  busy: false,
-  confirmed: false
-};
+const state = { branch:'', existing:null, picked:[], data:{}, busy:false, pending:null };
 
 function esc(s){
   return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
@@ -260,12 +230,12 @@ function apiReady(){ return API_URL && API_URL.indexOf('http') === 0; }
 function fetchJSON(url, opts, timeoutMs){
   const ctrl = new AbortController();
   const timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 25000);
-  const o = Object.assign({}, opts || {}, { signal: ctrl.signal, cache: 'no-store' });
+  const o = Object.assign({}, opts || {}, { signal:ctrl.signal, cache:'no-store' });
   return fetch(url, o).then(function(res){
     clearTimeout(timer);
     return res.text().then(function(txt){
       let data;
-      try { data = JSON.parse(txt); } catch (e) { throw new Error('استجابة غير متوقعة من الخادم'); }
+      try { data = JSON.parse(txt); } catch(e) { throw new Error('استجابة غير متوقعة من الخادم'); }
       if (!data || data.status !== 'success') throw new Error((data && data.message) || 'فشل الطلب');
       return data;
     });
@@ -284,37 +254,29 @@ function apiGet(params){
 }
 function apiPost(payload){
   if (!apiReady()) return Promise.reject(new Error('رابط الخادم غير مُعدّ'));
-  return fetchJSON(API_URL, { method:'POST', body: JSON.stringify(payload), redirect:'follow' });
+  return fetchJSON(API_URL, { method:'POST', body:JSON.stringify(payload), redirect:'follow' });
 }
 
-/* ---------- رسائل ---------- */
-function msg(kind, html){
-  const el = $('#topMsg');
-  el.className = 'msg ' + kind;
-  el.innerHTML = html;
-  el.scrollIntoView({ behavior:'smooth', block:'center' });
-}
+function msg(kind, html){ const el = $('#topMsg'); el.className = 'msg ' + kind; el.innerHTML = html; el.scrollIntoView({ behavior:'smooth', block:'center' }); }
 function clearMsg(){ $('#topMsg').className = 'msg'; $('#topMsg').innerHTML = ''; }
 
-/* ---------- بناء الـ HTML لصف ثلاجة واحدة ---------- */
+/* ======= بناء صف ثلاجة — يعرض الكود + cooling + subtype ======= */
 function buildRowHTML(r, i){
   const cooling = r.cooling || 'تبريد';
   const subtype = r.subtype || '';
 
-  /* dropdown التبريد/التجميد */
-  const coolingOpts = ['تبريد', 'تجميد'].map(function(v){
+  const coolingOpts = ['تبريد','تجميد'].map(function(v){
     return '<option value="' + esc(v) + '"' + (cooling === v ? ' selected' : '') + '>' + esc(v) + '</option>';
   }).join('');
 
-  /* dropdown النوع */
-  const subtypeOpts = '<option value="">-- النوع --</option>' +
+  const subtypeOpts = '<option value="">-- الموديل --</option>' +
     FRIDGE_SUBTYPES.map(function(v){
       return '<option value="' + esc(v) + '"' + (subtype === v ? ' selected' : '') + '>' + esc(v) + '</option>';
     }).join('');
 
   return '<div class="row" data-i="' + i + '">' +
     '<div class="row-top">' +
-      '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="' + esc(CODE_PLACEHOLDER) + '" maxlength="30" autocomplete="off">' +
+      '<input type="text" class="code-input" value="' + esc(r.code) + '" placeholder="رمز الثلاجة مثال: A" maxlength="30" autocomplete="off">' +
       '<button type="button" class="del" aria-label="حذف">✕</button>' +
     '</div>' +
     '<div class="row-selects">' +
@@ -324,10 +286,8 @@ function buildRowHTML(r, i){
   '</div>';
 }
 
-/* ---------- بناء الصفحة ---------- */
 function fillBranches(){
-  const sel = $('#branch');
-  sel.innerHTML = '<option value="">-- اختر الفرع --</option>' +
+  $('#branch').innerHTML = '<option value="">-- اختر الفرع --</option>' +
     BRANCHES.map(function(b){ return '<option value="' + esc(b) + '">' + esc(b) + '</option>'; }).join('');
 }
 
@@ -341,147 +301,98 @@ function renderSecGrid(){
 
 function toggleSection(name){
   const i = state.picked.indexOf(name);
-  if (i > -1) {
-    state.picked.splice(i, 1);
-    delete state.data[name];
-  } else {
-    state.picked.push(name);
-    if (!state.data[name]) state.data[name] = [{ code:'', cooling:'تبريد', subtype:'' }];
-  }
-  renderSecGrid();
-  renderBlocks();
-  updateBar();
-  saveDraft();
+  if (i > -1) { state.picked.splice(i, 1); delete state.data[name]; }
+  else { state.picked.push(name); if (!state.data[name]) state.data[name] = [{ code:'', cooling:'تبريد', subtype:'' }]; }
+  renderSecGrid(); renderBlocks(); updateBar(); saveDraft();
 }
 
 function renderBlocks(){
   const box = $('#blocks');
   if (!state.picked.length) { box.innerHTML = ''; return; }
-
   box.innerHTML = state.picked.map(function(sec){
     const rows = state.data[sec] || [];
-    const rowsHtml = rows.map(function(r, i){ return buildRowHTML(r, i); }).join('');
-
     return '<div class="block" data-sec="' + esc(sec) + '">' +
-      '<div class="block-head"><b>' + esc(sec) + '</b>' +
-        '<span class="cnt">' + arNum(rows.length) + '</span>' +
-        '<button type="button" class="add">+ ثلاجة</button>' +
-      '</div>' +
-      '<div class="rows">' + (rowsHtml || '<div class="empty-row">لا توجد ثلاجات</div>') + '</div>' +
+      '<div class="block-head"><b>' + esc(sec) + '</b><span class="cnt">' + arNum(rows.length) + '</span>' +
+        '<button type="button" class="add">+ ثلاجة</button></div>' +
+      '<div class="rows">' + (rows.map(function(r, i){ return buildRowHTML(r, i); }).join('') || '<div class="empty-row">لا توجد ثلاجات</div>') + '</div>' +
     '</div>';
   }).join('');
 }
 
 function updateBar(){
-  const total = countAll();
-  const secs = state.picked.length;
+  const total = countAll(), secs = state.picked.length;
   const info = $('#barInfo');
-  if (!state.branch) { info.textContent = 'اختر الفرع أولًا'; }
-  else if (!secs) { info.textContent = 'اختر قسمًا واحدًا على الأقل'; }
-  else { info.textContent = arNum(secs) + ' أقسام · ' + arNum(total) + ' ثلاجة'; }
+  if (!state.branch) info.textContent = 'اختر الفرع أولًا';
+  else if (!secs) info.textContent = 'اختر قسمًا واحدًا على الأقل';
+  else info.textContent = arNum(secs) + ' أقسام · ' + arNum(total) + ' ثلاجة';
   $('#submitBtn').disabled = state.busy || !state.branch || !secs || total === 0;
   $('#submitBtn').textContent = state.busy ? 'جارٍ الحفظ…' : 'حفظ الإعداد';
 }
 
 function countAll(){
   let n = 0;
-  state.picked.forEach(function(s){
-    (state.data[s] || []).forEach(function(r){ if (cleanCode(r.code)) n++; });
-  });
+  state.picked.forEach(function(s){ (state.data[s] || []).forEach(function(r){ if (cleanCode(r.code)) n++; }); });
   return n;
 }
 
-/* ---------- الأحداث ---------- */
-function onGridClick(e){
-  const el = e.target.closest('.sec-check');
-  if (el) toggleSection(el.dataset.sec);
-}
+function onGridClick(e){ const el = e.target.closest('.sec-check'); if (el) toggleSection(el.dataset.sec); }
 
 function onBlockClick(e){
-  const block = e.target.closest('.block');
-  if (!block) return;
+  const block = e.target.closest('.block'); if (!block) return;
   const sec = block.dataset.sec;
-
   if (e.target.closest('.add')) {
     state.data[sec].push({ code:'', cooling:'تبريد', subtype:'' });
-    renderBlocks();
-    updateBar();
-    saveDraft();
-    /* فوكس على آخر code-input */
-    const allRows = block.querySelectorAll ? null : null;
+    renderBlocks(); updateBar(); saveDraft();
     const rows = document.querySelector('[data-sec="' + sec + '"] .rows');
-    if (rows) {
-      const inputs = rows.querySelectorAll('.code-input');
-      if (inputs.length) inputs[inputs.length - 1].focus();
-    }
+    if (rows) { const inputs = rows.querySelectorAll('.code-input'); if (inputs.length) inputs[inputs.length-1].focus(); }
     return;
   }
-
   if (e.target.closest('.del')) {
     const rowEl = e.target.closest('.row');
-    const i = +rowEl.dataset.i;
-    state.data[sec].splice(i, 1);
-    renderBlocks();
-    updateBar();
-    saveDraft();
-    return;
+    state.data[sec].splice(+rowEl.dataset.i, 1);
+    renderBlocks(); updateBar(); saveDraft(); return;
   }
 }
 
 function onBlockChange(e){
-  const block = e.target.closest('.block');
-  if (!block) return;
+  const block = e.target.closest('.block'); if (!block) return;
   const sec = block.dataset.sec;
-  const rowEl = e.target.closest('.row');
-  if (!rowEl) return;
+  const rowEl = e.target.closest('.row'); if (!rowEl) return;
   const i = +rowEl.dataset.i;
   if (!state.data[sec] || !state.data[sec][i]) return;
-
-  if (e.target.classList.contains('cooling-select')) {
-    state.data[sec][i].cooling = e.target.value;
-    saveDraft();
-  } else if (e.target.classList.contains('subtype-select')) {
-    state.data[sec][i].subtype = e.target.value;
-    saveDraft();
-  }
+  if (e.target.classList.contains('cooling-select')) { state.data[sec][i].cooling = e.target.value; saveDraft(); }
+  else if (e.target.classList.contains('subtype-select')) { state.data[sec][i].subtype = e.target.value; saveDraft(); }
 }
 
 function onBlockInput(e){
   if (!e.target.classList.contains('code-input')) return;
   const block = e.target.closest('.block');
   const rowEl = e.target.closest('.row');
-  const i = +rowEl.dataset.i;
-  state.data[block.dataset.sec][i].code = e.target.value;
-  updateBar();
-  saveDraft();
+  state.data[block.dataset.sec][+rowEl.dataset.i].code = e.target.value;
+  updateBar(); saveDraft();
 }
 
 function onBlockKey(e){
-  if (e.key !== 'Enter') return;
-  if (!e.target.classList.contains('code-input')) return;
-  e.preventDefault();
-  e.target.closest('.block').querySelector('.add').click();
+  if (e.key !== 'Enter' || !e.target.classList.contains('code-input')) return;
+  e.preventDefault(); e.target.closest('.block').querySelector('.add').click();
 }
 
-/* ---------- تحميل إعداد موجود ---------- */
 function loadBranchConfig(branch){
   if (!branch) { state.existing = null; $('#existingInfo').textContent = ''; return Promise.resolve(); }
   $('#existingInfo').innerHTML = '<span style="opacity:.7">جارٍ تحميل الإعداد الحالي…</span>';
-  return apiGet({ action:'getSetup', branch:branch })
+  return apiGet({ action:'getSetup', branch })
     .then(function(d){
-      state.existing = { count: d.count || 0, sections: d.sections || [] };
+      state.existing = { count:d.count || 0, sections:d.sections || [] };
       if (d.exists) {
         $('#existingInfo').innerHTML = 'الإعداد الحالي: <b>' + arNum(d.count) + '</b> ثلاجة في ' +
           arNum(d.sections.length) + ' أقسام — أي حفظ جديد سيستبدله.';
         applyExisting();
       } else {
-        $('#existingInfo').textContent = 'لا يوجد إعداد لهذا الفرع — سيتم البدء من جديد.';
+        $('#existingInfo').textContent = 'لا يوجد إعداد لهذا الفرع.';
         clearForm(false);
       }
     })
-    .catch(function(e){
-      $('#existingInfo').innerHTML = '<span style="color:var(--bad)">تعذر تحميل الإعداد: ' + esc(e.message) + '</span>';
-    });
+    .catch(function(e){ $('#existingInfo').innerHTML = '<span style="color:var(--bad)">تعذر التحميل: ' + esc(e.message) + '</span>'; });
 }
 
 function applyExisting(){
@@ -490,36 +401,28 @@ function applyExisting(){
   state.picked = ex.sections.map(function(s){ return s.name; });
   state.data = {};
   ex.sections.forEach(function(s){
+    /* ======= قراءة cooling و subtype منفصلين من بيانات الـ API ======= */
     state.data[s.name] = s.fridges.map(function(f){
-      /* النوع المحفوظ قديماً كان "تبريد" أو "تجميد" مباشرة.
-         الآن هيكون بالشكل "تبريد|مالتي ديك" — نفصّله */
-      const parts = String(f.type || '').split('|');
-      const cooling = (parts[0] === 'تجميد') ? 'تجميد' : 'تبريد';
-      const subtype = parts[1] || '';
-      return { code: f.code, cooling: cooling, subtype: subtype };
+      return {
+        code:    f.code,
+        cooling: f.cooling || 'تبريد',
+        subtype: f.subtype || ''
+      };
     });
     if (!state.data[s.name].length) state.data[s.name] = [{ code:'', cooling:'تبريد', subtype:'' }];
   });
-  renderSecGrid();
-  renderBlocks();
-  updateBar();
+  renderSecGrid(); renderBlocks(); updateBar();
 }
 
 function clearForm(){
-  state.picked = [];
-  state.data = {};
-  renderSecGrid();
-  renderBlocks();
-  updateBar();
-  saveDraft();
+  state.picked = []; state.data = {};
+  renderSecGrid(); renderBlocks(); updateBar(); saveDraft();
 }
 
-/* ---------- التحقق ---------- */
 function validate(){
   const problems = [];
   if (!state.branch) problems.push('اختر الفرع');
   if (!state.picked.length) problems.push('اختر قسمًا واحدًا على الأقل');
-
   const seen = {};
   state.picked.forEach(function(sec){
     const rows = (state.data[sec] || []).filter(function(r){ return cleanCode(r.code); });
@@ -527,57 +430,37 @@ function validate(){
     rows.forEach(function(r){
       const c = cleanCode(r.code);
       const k = sec + '|||' + c.toLowerCase();
-      if (seen[k]) problems.push('رمز مكرر داخل القسم «' + sec + '»: ' + c);
+      if (seen[k]) problems.push('رمز مكرر في «' + sec + '»: ' + c);
       seen[k] = 1;
-      if (c.length > 30) problems.push('رمز طويل جدًا: ' + c.slice(0, 12) + '…');
     });
   });
   return problems;
 }
 
-function payload(){
+/* ======= payload يبعت cooling و subtype منفصلين للـ Apps Script ======= */
+function buildPayload(){
   const sections = state.picked.map(function(sec){
     return {
       name: sec,
       fridges: (state.data[sec] || [])
-        .map(function(r){
-          const code = cleanCode(r.code);
-          const cooling = r.cooling || 'تبريد';
-          const subtype = r.subtype || '';
-          return { code: code, cooling: cooling, subtype: subtype };
-        })
+        .map(function(r){ return { code:cleanCode(r.code), cooling:r.cooling || 'تبريد', subtype:r.subtype || '' }; })
         .filter(function(r){ return r.code; })
     };
   }).filter(function(s){ return s.fridges.length; });
 
-  /* إرسال الموديل مدمجاً مع نوع التبريد: "تبريد|مالتي ديك" أو "تجميد|غرفة ( رئيسية )" */
-  const sectionsWithType = sections.map(function(sec){
-    return {
-      name: sec.name,
-      fridges: sec.fridges.map(function(f){
-        const typeStr = f.subtype ? (f.cooling + '|' + f.subtype) : f.cooling;
-        return { code: f.code, type: typeStr };
-      })
-    };
-  });
-
   return {
-    action: 'submitSetup',
-    branch: state.branch,
-    sections: sectionsWithType,
-    expected: sectionsWithType.reduce(function(a, s){ return a + s.fridges.length; }, 0)
+    action:   'submitSetup',
+    branch:   state.branch,
+    sections: sections,
+    expected: sections.reduce(function(a, s){ return a + s.fridges.length; }, 0)
   };
 }
 
-/* ---------- الحفظ ---------- */
 let modalAction = null;
-
 function openModal(title, text, okText, action){
-  $('#mTitle').textContent = title;
-  $('#mText').innerHTML = text;
+  $('#mTitle').textContent = title; $('#mText').innerHTML = text;
   $('#mOk').textContent = okText || 'تأكيد';
-  modalAction = action || null;
-  $('#modal').classList.add('on');
+  modalAction = action || null; $('#modal').classList.add('on');
 }
 function closeModal(){ $('#modal').classList.remove('on'); modalAction = null; }
 
@@ -585,46 +468,32 @@ function askAndSubmit(){
   clearMsg();
   const problems = validate();
   if (problems.length) {
-    msg('err', '<b>لا يمكن الحفظ بهذه البيانات:</b><ul>' +
-      problems.slice(0, 8).map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>');
+    msg('err', '<b>لا يمكن الحفظ:</b><ul>' + problems.slice(0,8).map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>');
     return;
   }
-
-  const p = payload();
+  const p = buildPayload();
   const was = state.existing && state.existing.count ? state.existing.count : 0;
-  const now = p.expected;
-
-  let text = 'الفرع: <b>' + esc(state.branch) + '</b><br>' +
-    'عدد الأقسام: <b>' + arNum(p.sections.length) + '</b> · عدد الثلاجات: <b>' + arNum(now) + '</b>';
+  let text = 'الفرع: <b>' + esc(state.branch) + '</b><br>الأقسام: <b>' + arNum(p.sections.length) + '</b> · الثلاجات: <b>' + arNum(p.expected) + '</b>';
   if (was) {
-    text += '<br><br>سيتم استبدال الإعداد القديم (<b>' + arNum(was) + '</b> ثلاجة) بالجديد.';
-    if (now < was) {
-      text += '<br><span style="color:var(--warn);font-weight:700">تحذير: العدد الجديد أقل من القديم بـ ' +
-        arNum(was - now) + ' ثلاجة.</span>';
-    }
+    text += '<br><br>سيتم استبدال الإعداد القديم (' + arNum(was) + ' ثلاجة).';
+    if (p.expected < was) text += '<br><span style="color:var(--warn);font-weight:700">تحذير: العدد الجديد أقل بـ ' + arNum(was - p.expected) + ' ثلاجة.</span>';
   }
-
   state.pending = p;
-  openModal('تأكيد حفظ الإعداد', text, 'حفظ ' + arNum(now) + ' ثلاجة', doSubmit);
+  openModal('تأكيد حفظ الإعداد', text, 'حفظ ' + arNum(p.expected) + ' ثلاجة', doSubmit);
 }
 
 function doSubmit(){
-  const p = state.pending;
-  if (!p) return;
-  state.pending = null;
-  closeModal();
-  state.busy = true;
-  updateBar();
+  const p = state.pending; if (!p) return;
+  state.pending = null; closeModal();
+  state.busy = true; updateBar();
   $('#submitBtn').innerHTML = '<span class="spin"></span> جارٍ الحفظ…';
 
   apiPost(p)
     .then(function(){
       return apiGet({ action:'getSetup', branch:p.branch }).then(function(d){
-        const got = d.count || 0;
-        if (!d.exists || got !== p.expected) {
-          throw new Error('الحفظ غير مكتمل — عدد المحفوظ في الخادم: ' + arNum(got) + ' من ' + arNum(p.expected) + ' ثلاجة');
-        }
-        return { got:got, sections:(d.sections || []).length };
+        if (!d.exists || d.count !== p.expected)
+          throw new Error('الحفظ غير مكتمل — محفوظ: ' + arNum(d.count || 0) + ' من ' + arNum(p.expected));
+        return { got:d.count, sections:(d.sections || []).length };
       });
     })
     .then(function(r){
@@ -634,63 +503,42 @@ function doSubmit(){
       $('#sectionsCard').style.display = 'none';
       $('#blocks').style.display = 'none';
       $('#resultCard').style.display = 'block';
-      $('#resultText').innerHTML = 'فرع <b>' + esc(p.branch) + '</b> — ' +
-        arNum(r.got) + ' ثلاجة في ' + arNum(r.sections) + ' أقسام.<br>' +
-        'يمكنك الآن تسجيل درجات الحرارة من صفحة التسجيل.';
-      $('.bar').style.display = 'none';
+      $('#resultText').innerHTML = 'فرع <b>' + esc(p.branch) + '</b> — ' + arNum(r.got) + ' ثلاجة في ' + arNum(r.sections) + ' أقسام.';
+      document.querySelector('.bar').style.display = 'none';
       window.scrollTo(0, 0);
     })
     .catch(function(err){
-      state.busy = false;
-      updateBar();
-      $('#submitBtn').textContent = 'حفظ الإعداد';
-      msg('err', '<b>لم يتم الحفظ:</b> ' + esc(err.message) +
-        '<br><small>البيانات المدخلة محفوظة — عدّلها ثم أعد المحاولة.</small>');
+      state.busy = false; updateBar(); $('#submitBtn').textContent = 'حفظ الإعداد';
+      msg('err', '<b>لم يتم الحفظ:</b> ' + esc(err.message));
     });
 }
 
-/* ---------- مسودة ---------- */
 function draftKey(b){ return LS_DRAFT + ':' + b; }
 function saveDraft(){
   if (!state.branch) return;
-  try {
-    localStorage.setItem(draftKey(state.branch), JSON.stringify({
-      branch: state.branch, picked: state.picked, data: state.data, ts: Date.now()
-    }));
-  } catch (e) {}
+  try { localStorage.setItem(draftKey(state.branch), JSON.stringify({ branch:state.branch, picked:state.picked, data:state.data, ts:Date.now() })); }
+  catch(e) {}
 }
 function readDraft(b){
-  try { return JSON.parse(localStorage.getItem(draftKey(b)) || 'null'); } catch (e) { return null; }
+  try { return JSON.parse(localStorage.getItem(draftKey(b)) || 'null'); } catch(e) { return null; }
 }
 
-/* ---------- البداية ---------- */
 function boot(){
-  fillBranches();
-  renderSecGrid();
-  updateBar();
-
-  if (!apiReady()) {
-    msg('warn', 'يجب إدخال رابط النشر في أعلى الكود (المتغير API_URL) في الصفحتين.');
-  }
+  fillBranches(); renderSecGrid(); updateBar();
+  if (!apiReady()) msg('warn', 'يجب إدخال رابط النشر في API_URL.');
 
   $('#branch').addEventListener('change', function(){
     const b = this.value;
     if (state.branch && state.picked.length) saveDraft();
-    state.branch = b;
-    clearMsg();
-    updateBar();
+    state.branch = b; clearMsg(); updateBar();
     if (!b) { state.existing = null; clearForm(); $('#existingInfo').textContent = ''; return; }
     loadBranchConfig(b).then(function(){
       const d = readDraft(b);
       if (d && d.picked && d.picked.length) {
-        msg('warn', 'توجد مسودة غير محفوظة لهذا الفرع. ' +
-          '<button id="restoreDraft" style="margin-top:6px;border:none;background:var(--warn);color:#fff;border-radius:8px;padding:6px 10px;font-weight:700">استرجاع المسودة</button> ' +
-          '<button id="dropDraft" style="margin-top:6px;border:1px solid var(--warn);background:transparent;color:var(--warn);border-radius:8px;padding:6px 10px;font-weight:700">تجاهل</button>');
-        $('#restoreDraft').onclick = function(){
-          state.picked = d.picked;
-          state.data = d.data || {};
-          renderSecGrid(); renderBlocks(); updateBar(); clearMsg();
-        };
+        msg('warn', 'توجد مسودة غير محفوظة. ' +
+          '<button id="restoreDraft" style="border:none;background:var(--warn);color:#fff;border-radius:8px;padding:6px 10px;font-weight:700">استرجاع</button> ' +
+          '<button id="dropDraft" style="border:1px solid var(--warn);background:transparent;color:var(--warn);border-radius:8px;padding:6px 10px;font-weight:700">تجاهل</button>');
+        $('#restoreDraft').onclick = function(){ state.picked = d.picked; state.data = d.data || {}; renderSecGrid(); renderBlocks(); updateBar(); clearMsg(); };
         $('#dropDraft').onclick = function(){ localStorage.removeItem(draftKey(b)); clearMsg(); };
       }
     });
@@ -701,14 +549,10 @@ function boot(){
   $('#blocks').addEventListener('change', onBlockChange);
   $('#blocks').addEventListener('input', onBlockInput);
   $('#blocks').addEventListener('keydown', onBlockKey);
-
   $('#clearBtn').addEventListener('click', function(){
     if (!state.picked.length) return;
-    openModal('تفريغ النموذج',
-      'سيتم مسح جميع الأقسام والثلاجات المدخلة هنا (لن يُحذف شيء من الشيت).',
-      'مسح', function(){ clearForm(); updateBar(); });
+    openModal('تفريغ النموذج', 'سيتم مسح جميع الأقسام والثلاجات (لن يُحذف شيء من الشيت).', 'مسح', function(){ clearForm(); updateBar(); });
   });
-
   $('#submitBtn').addEventListener('click', askAndSubmit);
   $('#mCancel').addEventListener('click', closeModal);
   $('#mOk').addEventListener('click', function(){ const a = modalAction; closeModal(); if (a) a(); });
