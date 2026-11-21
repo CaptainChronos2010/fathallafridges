@@ -5,73 +5,75 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#141414">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>تسجيل درجات الحرارة — أسواق فتح الله</title>
+<title>تسجيل درجات الحرارة — أسواق فتح الله للجملة</title>
 <style>
   :root{
     color-scheme: light;
-    --bg:#F5F5F4; --card:#FFFFFF; --card-done:#F2FAF6; --ink:#141414; --muted:#5C5E63;
-    --line:#E3E3E0; --brand:#DF5B00; --brand-bright:#F37021; --brand-dark:#B84700; --brand-soft:#FFF1E6;
-    --black:#141414; --black-2:#222222;
-    --ok:#0E8A54; --ok-soft:#E5F6EE; --warn:#B86200; --warn-soft:#FEF3E2;
+    --bg:#F5F4F2; --card:#FFFFFF; --ink:#141414; --muted:#666666;
+    --line:#E5E2DC; --brand:#F37021; --brand-dark:#DF5B00; --brand-soft:#FFF1E6;
+    --black:#141414; --black-soft:#242424;
+    --ok:#107C41; --ok-soft:#E7F6ED;
+    --warn:#B45309; --warn-soft:#FEF3C7;
     --bad:#C62828; --bad-soft:#FDECEA;
-    --shadow:0 1px 2px rgba(20,20,20,.05);
-    --r:14px;
+    --shadow:0 1px 3px rgba(20,20,20,.06), 0 8px 22px rgba(20,20,20,.05);
+    --r:16px;
   }
   @media (prefers-color-scheme: dark){
     :root{
       color-scheme: dark;
-      --bg:#0E0E0F; --card:#18181A; --card-done:#13211A; --ink:#F4F4F2; --muted:#A0A3AA;
-      --line:#2B2B2F; --brand:#F37021; --brand-bright:#FF8533; --brand-dark:#D45608; --brand-soft:#2E1C10;
-      --black:#141414; --black-2:#242428;
-      --ok:#2CD08C; --ok-soft:#112D21; --warn:#F39C38; --warn-soft:#2E2110;
-      --bad:#F06B6B; --bad-soft:#34181A;
+      --bg:#0E0E0E; --card:#181818; --ink:#F4F4F2; --muted:#A3A3A3;
+      --line:#2B2B2B; --brand:#F37021; --brand-dark:#FF8538; --brand-soft:#2D1A0E;
+      --black:#111111; --black-soft:#222222;
+      --ok:#2DCE7A; --ok-soft:#102B1D;
+      --warn:#F59E0B; --warn-soft:#2F220B;
+      --bad:#EF5350; --bad-soft:#341616;
       --shadow:none;
     }
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html{ -webkit-text-size-adjust:100%; }
   body{
-    margin:0; background:var(--bg); color:var(--ink); font-size:15.5px; line-height:1.45;
+    margin:0; background:var(--bg); color:var(--ink); font-size:16px; line-height:1.45;
     font-family:'Segoe UI', Tahoma, 'Noto Kufi Arabic', Arial, sans-serif;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom:env(safe-area-inset-bottom, 0px);
   }
-  button, input, select{ font-family:inherit; font-size:15.5px; color:inherit; }
+  button, input, select{ font-family:inherit; font-size:16px; color:inherit; }
   button{ cursor:pointer; }
   .screen{ display:none; }
   .screen.on{ display:block; }
 
-  /* ================= شعار وهوية أسواق فتح الله ================= */
-  .brand-lockup{ display:flex; align-items:center; gap:11px; }
-  .brand-mark{
-    width:44px; height:44px; flex:0 0 44px; border-radius:11px;
-    background:var(--brand-bright); border:2px solid rgba(255,255,255,.18);
-    display:grid; place-items:center; box-shadow:0 4px 12px rgba(0,0,0,.28);
-  }
-  .brand-text h1{ margin:0; font-size:18px; font-weight:800; color:#fff; }
-  .brand-text p{ margin:1px 0 0; font-size:12.5px; color:#F37021; font-weight:600; }
-
+  /* ================= ترويسة أسواق فتح الله (برتقالي على أسود) ================= */
   .hero{
-    background:linear-gradient(160deg, var(--black-2), var(--black));
-    color:#fff; padding:18px 16px 16px; border-bottom:4px solid var(--brand-bright);
-    border-radius:0 0 20px 20px;
+    background:linear-gradient(165deg, #1A1A1A, #0D0D0D);
+    color:#fff; padding:20px 16px 18px;
+    border-bottom:4px solid var(--brand);
+    border-radius:0 0 24px 24px;
   }
-  .hero-inner{ max-width:520px; margin:0 auto; }
+  .brand-lockup{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{
+    width:44px; height:44px; flex:0 0 44px; border-radius:12px;
+    background:var(--brand); color:#fff;
+    display:grid; place-items:center;
+    box-shadow:0 4px 14px rgba(243,112,33,.35);
+  }
+  .hero h1{ margin:0; font-size:18px; font-weight:800; letter-spacing:-.2px; }
+  .hero p{ margin:2px 0 0; font-size:12.5px; color:#D4D4D4; }
 
-  .datebar{ margin-top:14px; display:flex; gap:8px; align-items:center; }
+  .datebar{ margin-top:16px; display:flex; gap:8px; align-items:center; }
   .datebar input[type="date"]{
-    flex:1; min-height:44px; border:1px solid rgba(255,255,255,.16); border-radius:11px; padding:0 12px;
-    background:rgba(255,255,255,.08); color:#fff; font-size:15px; font-weight:600;
+    flex:1; min-height:46px; border:1px solid rgba(255,255,255,.16); border-radius:12px;
+    padding:0 12px; background:rgba(255,255,255,.08); color:#fff; font-size:15px; font-weight:600;
   }
-  .datebar input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(1); opacity:.85; }
+  .datebar input[type="date"]::-webkit-calendar-picker-indicator{ filter:invert(1); opacity:.9; }
   .icon-btn{
-    width:44px; height:44px; flex:0 0 auto; border:none; border-radius:11px;
-    background:rgba(255,255,255,.12); color:#fff; font-size:18px; display:flex;
-    align-items:center; justify-content:center;
+    width:44px; height:44px; flex:0 0 44px; border:1px solid rgba(255,255,255,.15);
+    border-radius:12px; background:rgba(255,255,255,.1); color:#fff; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
   }
-  .icon-btn:active{ transform:scale(.96); }
+  .icon-btn:active{ transform:scale(.95); }
 
   /* ================= شاشة البداية ================= */
-  .pad{ padding:16px 14px 28px; max-width:520px; margin:0 auto; }
+  .pad{ padding:16px 14px 32px; max-width:520px; margin:0 auto; }
   .pick{
     background:var(--card); border:1px solid var(--line); border-radius:var(--r);
     padding:16px; box-shadow:var(--shadow);
@@ -79,190 +81,190 @@
   .fld{ display:block; margin-bottom:14px; }
   .fld > span{ display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; font-weight:700; }
   .fld select, .fld input{
-    width:100%; min-height:50px; border:1.5px solid var(--line); border-radius:11px;
+    width:100%; min-height:50px; border:1.5px solid var(--line); border-radius:12px;
     background:var(--bg); padding:0 12px; font-size:16px; outline:none; color:var(--ink);
   }
-  .fld select:focus, .fld input:focus{ border-color:var(--brand); background:var(--card); box-shadow:0 0 0 3px var(--brand-soft); }
-  .pick-info{ font-size:12.5px; color:var(--muted); min-height:18px; margin:-4px 0 14px; }
+  .fld select:focus, .fld input:focus{
+    border-color:var(--brand); background:var(--card); box-shadow:0 0 0 3px var(--brand-soft);
+  }
+  .pick-info{ font-size:13px; color:var(--muted); min-height:18px; margin:-4px 0 14px; }
 
-  /* ================= شاشة العمل — شريط علوي مضغوط للموبايل ================= */
+  /* ================= شاشة العمل ================= */
   .topstick{ position:sticky; top:0; z-index:30; background:var(--bg); border-bottom:1px solid var(--line); }
   .workbar{
     background:var(--black); color:#fff;
-    display:flex; align-items:center; gap:8px; padding:8px 10px;
-    padding-top:calc(8px + env(safe-area-inset-top, 0px));
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; padding-top:calc(10px + env(safe-area-inset-top, 0px));
   }
-  .workbar .icon-btn{ width:38px; height:38px; background:rgba(255,255,255,.12); font-size:16px; }
   .wb-title{ flex:1; min-width:0; line-height:1.25; text-align:center; }
-  .wb-title b{ display:block; font-size:15px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .wb-title small{ font-size:11.5px; color:#D4D4D8; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .progress{ height:4px; background:#2D2D30; }
-  .progress i{ display:block; height:100%; width:0; background:var(--brand-bright); transition:width .25s; }
+  .wb-title b{ display:block; font-size:15.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wb-title small{ font-size:11.5px; color:#CFCFCF; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .progress{ height:4px; background:#2E2E2E; }
+  .progress i{ display:block; height:100%; width:0; background:var(--brand); transition:width .25s; }
 
   .chips{
-    display:flex; gap:6px; overflow-x:auto; padding:8px 10px;
+    display:flex; gap:8px; overflow-x:auto; padding:10px 12px;
     scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
   }
   .chips::-webkit-scrollbar{ display:none; }
   .chip{
-    flex:0 0 auto; scroll-snap-align:center; border:1px solid var(--line); background:var(--card);
-    border-radius:999px; padding:6px 13px; font-size:13px; font-weight:600; color:var(--muted);
-    display:flex; align-items:center; gap:6px; white-space:nowrap; min-height:36px;
+    flex:0 0 auto; scroll-snap-align:center; border:1.5px solid var(--line); background:var(--card);
+    border-radius:12px; padding:9px 13px; font-size:13.5px; font-weight:700; color:var(--muted);
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
   }
-  .chip b{ font-weight:700; color:inherit; font-variant-numeric:tabular-nums; }
-  .chip.done{ color:var(--ok); border-color:#BCE3CF; background:var(--ok-soft); }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); }
+  .chip.done{ color:var(--ok); border-color:var(--ok-soft); background:var(--ok-soft); }
+  .chip.done .dot{ background:var(--ok); }
   .chip.on{ background:var(--brand); border-color:var(--brand); color:#fff; }
+  .chip.on .dot{ background:#fff; }
 
-  /* ================= التصفية والبحث ================= */
-  .work-wrap{ padding:10px 10px 140px; max-width:960px; margin:0 auto; }
-  .sec-toolbar{
-    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px;
-    margin-bottom:10px;
-  }
-  .sec-title{ display:flex; align-items:baseline; gap:7px; }
-  .sec-title b{ font-size:16px; color:var(--ink); }
-  .sec-title span{ font-size:12.5px; color:var(--muted); font-weight:700; font-variant-numeric:tabular-nums; }
+  /* ================= محتوى القسم ================= */
+  .cards{ padding:10px 12px 190px; max-width:600px; margin:0 auto; }
+  .sec-title{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; padding:2px 2px 8px; }
+  .sec-title b{ font-size:17px; font-weight:800; }
+  .sec-title span{ font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
 
-  .filter-bar{
-    display:flex; gap:3px; background:var(--card); border:1px solid var(--line);
-    padding:3px; border-radius:10px;
+  /* شريط الفلترة والبحث لتقليل الحمل في الأقسام الكبيرة */
+  .sec-toolbar{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+  .filter-row{ display:flex; gap:6px; }
+  .flt-btn{
+    flex:1; min-height:38px; border:1.5px solid var(--line); background:var(--card);
+    border-radius:10px; font-size:12.5px; font-weight:700; color:var(--muted);
+    padding:0 8px; white-space:nowrap;
   }
-  .f-btn{
-    border:none; background:transparent; color:var(--muted); font-size:12.5px; font-weight:700;
-    padding:6px 10px; border-radius:7px; white-space:nowrap; min-height:32px;
+  .flt-btn.on{ background:var(--black); border-color:var(--black); color:#fff; }
+  @media (prefers-color-scheme: dark){
+    .flt-btn.on{ background:var(--brand); border-color:var(--brand); color:#fff; }
   }
-  .f-btn.on{ background:var(--black); color:#fff; }
-  .f-btn.has-warn.on{ background:var(--bad); color:#fff; }
+  .flt-btn.warn-flt.on{ background:var(--bad); border-color:var(--bad); color:#fff; }
+  .search-box{ position:relative; }
+  .search-box input{
+    width:100%; min-height:42px; border:1.5px solid var(--line); border-radius:11px;
+    background:var(--card); padding:0 12px; font-size:14.5px; outline:none;
+  }
+  .search-box input:focus{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
 
-  .search-wrap{ width:100%; margin-bottom:10px; }
-  .search-input{
-    width:100%; min-height:42px; border:1px solid var(--line); border-radius:10px;
-    background:var(--card); padding:0 12px; font-size:14px; outline:none;
-  }
-  .search-input:focus{ border-color:var(--brand); box-shadow:0 0 0 2px var(--brand-soft); }
-
-  /* ================= الكروت المريحة للموبايل ================= */
-  .cards-grid{
-    display:grid; grid-template-columns:1fr; gap:8px;
-  }
-  @media (min-width: 720px){
-    .cards-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
-  }
-
+  /* ================= بطاقة الثلاجة (مضبوطة للموبايل RTL) ================= */
   .card{
-    background:var(--card); border:1px solid var(--line); border-radius:var(--r);
-    padding:10px; box-shadow:var(--shadow);
-    transition:background .15s, border-color .15s;
+    background:var(--card); border:1.5px solid var(--line); border-radius:var(--r);
+    padding:12px; margin-bottom:10px; box-shadow:var(--shadow);
   }
-  .card.is-saved{ background:var(--card-done); border-color:#C3E2D1; }
-  @media (prefers-color-scheme: dark){ .card.is-saved{ border-color:#244435; } }
-  .card.alarm{ border-color:var(--bad); box-shadow:0 0 0 2px var(--bad-soft); }
+  .card.is-done{ border-color:var(--ok-soft); }
+  .card.alarm{ border-color:var(--bad); box-shadow:0 0 0 2px var(--bad-soft), var(--shadow); }
+  .card[hidden]{ display:none !important; }
 
   .card-top{
-    display:flex; align-items:center; gap:7px; margin-bottom:9px; min-height:30px;
+    display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+    margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--line);
   }
+  .card-id{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+  .card-row1{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
   .code{
-    font-weight:800; font-size:14.5px; background:var(--black); color:#fff;
-    border-bottom:2px solid var(--brand-bright);
-    border-radius:7px; padding:2px 9px; white-space:nowrap; font-variant-numeric:tabular-nums;
+    font-weight:800; font-size:15.5px; background:var(--black); color:#fff;
+    border-radius:8px; padding:3px 10px; letter-spacing:.2px;
   }
-  .meta-line{
-    flex:1; min-width:0; font-size:12.5px; color:var(--muted);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  .alarm-badge{
+    background:var(--bad); color:#fff; border-radius:7px; font-size:11px;
+    padding:3px 7px; font-weight:700; white-space:nowrap;
   }
-  .meta-line strong{ color:var(--brand-dark); font-weight:700; }
-  @media (prefers-color-scheme: dark){ .meta-line strong{ color:var(--brand-bright); } }
+  .card-row2{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .type{ font-size:12.5px; font-weight:700; color:var(--muted); }
+  .subtype-tag{
+    font-size:12px; color:var(--brand-dark); background:var(--brand-soft);
+    border:1px solid rgba(243,112,33,.25);
+    border-radius:7px; padding:2px 8px; font-weight:700;
+  }
 
   .state{
-    font-size:11.5px; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums;
+    font-size:11px; font-weight:700; padding:4px 9px; border-radius:8px;
+    white-space:nowrap; flex:0 0 auto;
   }
-  .state.saved{ color:var(--ok); }
-  .state.dirty{ color:var(--warn); }
-  .state.none{ color:var(--muted); }
+  .state.saved{ background:var(--ok-soft); color:var(--ok); }
+  .state.dirty{ background:var(--warn-soft); color:var(--warn); }
+  .state.none{ background:var(--bg); color:var(--muted); }
 
-  .note-toggle{
-    width:34px; height:34px; flex:0 0 34px; border:1px solid var(--line); background:var(--bg);
-    border-radius:8px; font-size:13px; color:var(--muted); display:grid; place-items:center;
-  }
-  .note-toggle.has-note{ border-color:var(--brand); color:var(--brand); background:var(--brand-soft); }
-
-  /* RTL طبيعي: الحالة يمين + الحرارة شمال */
-  .card-body{ display:flex; flex-direction:row; gap:8px; align-items:center; }
+  /* RTL: row الطبيعي يضع status-col على اليمين و temp-col على الشمال */
+  .card-body{ display:flex; flex-direction:row; gap:10px; align-items:flex-end; }
+  .flabel{ font-size:11px; font-weight:700; color:var(--muted); margin-bottom:5px; }
 
   .status-col{ flex:1; min-width:0; }
-  .seg{
-    display:flex; gap:4px; background:var(--bg); border:1px solid var(--line);
-    padding:3px; border-radius:10px;
-  }
+  .seg{ display:flex; gap:6px; }
   .seg-btn{
-    flex:1; min-width:0; height:42px; border:none; background:transparent;
-    border-radius:7px; font-size:13.5px; font-weight:700; color:var(--muted);
-    padding:0 6px; white-space:nowrap;
-    transition:background .12s, color .12s, transform .08s;
+    flex:1; min-width:0; height:48px; border:1.5px solid var(--line); background:var(--bg);
+    border-radius:11px; font-size:14px; font-weight:800; color:var(--muted);
+    padding:0 6px; position:relative; transition:transform .08s, background .12s;
+    white-space:nowrap;
   }
   .seg-btn:active{ transform:scale(.97); }
-  .seg-btn.ok.on{ background:var(--ok); color:#fff; }
-  .seg-btn.bad.on{ background:var(--bad); color:#fff; }
-  .seg-btn.warn.on{ background:var(--warn); color:#fff; }
-  .seg-btn.info.on{ background:var(--black); color:#fff; }
+  .seg-btn.ok.on{ background:var(--ok); border-color:var(--ok); color:#fff; }
+  .seg-btn.bad.on{ background:var(--bad); border-color:var(--bad); color:#fff; }
+  .seg-btn.warn.on{ background:var(--warn); border-color:var(--warn); color:#fff; }
+  .seg-btn.info.on{ background:var(--brand); border-color:var(--brand); color:#fff; }
 
-  /* خانة الحرارة على الشمال مع زر السالب على يسار الرقم */
-  .temp-col{ flex:0 0 auto; display:flex; align-items:center; gap:4px; direction:ltr; }
+  .temp-col{ flex:0 0 auto; display:flex; flex-direction:column; }
+  /* direction: ltr داخل صف الحرارة يثبّت زر السالب يسار خانة الرقم */
+  .temp-row{ display:flex; direction:ltr; align-items:stretch; gap:5px; }
   .sign{
-    width:36px; height:48px; border:1px solid var(--line); background:var(--bg);
-    border-radius:9px; font-size:20px; font-weight:700; color:var(--ink); line-height:1;
+    width:42px; height:48px; flex:0 0 42px; border:1.5px solid var(--line); background:var(--bg);
+    border-radius:10px; font-size:22px; font-weight:800; color:var(--ink); line-height:1;
+    display:flex; align-items:center; justify-content:center;
   }
-  .sign:active{ background:var(--brand-soft); color:var(--brand-dark); }
+  .sign:active{ background:var(--brand-soft); border-color:var(--brand); }
   .temp{
-    width:72px; height:48px; text-align:center; font-size:21px; font-weight:800;
-    border:1.5px solid var(--line); border-radius:9px; background:var(--card); outline:none;
+    width:78px; height:48px; text-align:center; font-size:21px; font-weight:800;
+    border:1.5px solid var(--line); border-radius:10px; background:var(--card); outline:none;
     direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums;
   }
   .temp:focus{ border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
-  .temp::placeholder{ font-size:12px; font-weight:500; color:var(--muted); }
+  .temp::placeholder{ font-size:13px; font-weight:600; color:var(--muted); }
 
-  .hint{ font-size:11.5px; margin-top:6px; color:var(--bad); font-weight:700; display:none; }
-  .hint.show{ display:block; }
+  .hint{ font-size:11px; margin-top:5px; color:var(--muted); min-height:15px; }
+  .hint.over{ color:var(--bad); font-weight:700; }
 
-  .note-box{ display:none; margin-top:8px; }
-  .note-box.open{ display:block; }
-  .note-input{
-    width:100%; min-height:40px; border:1px solid var(--line); border-radius:9px;
-    padding:0 10px; background:var(--bg); font-size:13.5px; outline:none;
+  details.note{ margin-top:8px; }
+  details.note summary{
+    font-size:12px; color:var(--muted); cursor:pointer; list-style:none; padding:4px 0; font-weight:600;
   }
-  .note-input:focus{ border-color:var(--brand); background:var(--card); }
+  details.note summary::-webkit-details-marker{ display:none; }
+  details.note summary::before{ content:"+ "; color:var(--brand); font-weight:800; }
+  details.note[open] summary::before{ content:"− "; }
+  .note input{
+    width:100%; margin-top:6px; min-height:42px; border:1.5px solid var(--line); border-radius:10px;
+    padding:0 10px; background:var(--bg); font-size:14px; outline:none;
+  }
+  .note input:focus{ border-color:var(--brand); background:var(--card); }
 
   /* ================= شريط الحفظ ================= */
   .actionbar{
     position:fixed; inset-inline:0; bottom:0; z-index:40; background:var(--card);
-    border-top:1px solid var(--line); padding:8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
-    box-shadow:0 -4px 18px rgba(20,20,20,.08);
+    border-top:1px solid var(--line); padding:9px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    box-shadow:0 -6px 22px rgba(0,0,0,.08);
   }
-  .actionbar .problems{ margin:0 0 8px; }
-  .ab-info{ font-size:11.5px; color:var(--muted); text-align:center; margin-bottom:6px; font-variant-numeric:tabular-nums; }
-  .ab-btns{ display:flex; gap:8px; max-width:960px; margin:0 auto; }
+  .actionbar .problems{ margin:0 auto 9px; max-width:600px; }
+  .ab-info{ font-size:12px; color:var(--muted); text-align:center; margin-bottom:7px; font-variant-numeric:tabular-nums; }
+  .ab-btns{ display:flex; gap:8px; max-width:600px; margin:0 auto; }
   .btn{
-    flex:1; min-height:48px; border:none; border-radius:12px; font-size:15.5px; font-weight:700;
-    padding:0 12px; display:flex; align-items:center; justify-content:center; gap:6px;
+    flex:1; min-height:52px; border:none; border-radius:13px; font-size:15.5px; font-weight:800;
+    padding:0 14px; display:flex; align-items:center; justify-content:center; gap:6px;
   }
   .btn.primary{ background:var(--brand); color:#fff; }
   .btn.primary:disabled{ background:var(--line); color:var(--muted); }
-  .btn.ghost{ background:var(--bg); color:var(--ink); border:1px solid var(--line); flex:0 0 25%; font-size:13.5px; padding:0 6px; }
+  .btn.ghost{ background:var(--bg); color:var(--ink); border:1.5px solid var(--line); flex:0 0 26%; font-size:14px; padding:0 6px; }
   .btn.ghost:disabled{ opacity:.45; }
   .btn:active{ transform:scale(.99); }
 
   .problems{
     display:none; background:var(--bad-soft); border:1px solid var(--bad);
-    border-radius:12px; padding:10px 12px; font-size:13px; color:var(--bad); max-width:960px; margin-inline:auto;
+    border-radius:12px; padding:10px 12px; font-size:13.5px; color:var(--bad);
   }
   .problems b{ display:block; margin-bottom:4px; font-size:14px; }
-  .problems ul{ margin:4px 0 0; padding-inline-start:18px; line-height:1.7; }
+  .problems ul{ margin:4px 0 0; padding-inline-start:18px; line-height:1.8; }
 
   /* ================= متفرقات ================= */
   .toast{
     position:fixed; inset-inline:12px; bottom:calc(96px + env(safe-area-inset-bottom, 0px));
     max-width:520px; margin-inline:auto; z-index:60; pointer-events:none;
-    background:var(--black); color:#fff; border-radius:11px; padding:11px 14px; font-size:14px;
+    background:var(--black); color:#fff; border-radius:12px; padding:12px 14px; font-size:14px; font-weight:600;
     box-shadow:0 10px 30px rgba(0,0,0,.25); opacity:0; transform:translateY(10px);
     transition:opacity .18s, transform .18s;
   }
@@ -273,15 +275,15 @@
 
   .banner{
     background:var(--warn-soft); color:var(--warn); border:1px solid var(--warn);
-    border-radius:11px; padding:10px 12px; font-size:13px; margin-bottom:10px;
+    border-radius:12px; padding:10px 12px; font-size:13px; margin-bottom:12px;
   }
   .empty{
-    text-align:center; padding:28px 18px; color:var(--muted); font-size:14px;
-    background:var(--card); border-radius:var(--r); border:1px dashed var(--line);
+    text-align:center; padding:32px 18px; color:var(--muted); font-size:14px;
+    background:var(--card); border-radius:var(--r); border:1.5px dashed var(--line);
   }
-  .skel{ height:96px; border-radius:var(--r); background:linear-gradient(90deg,var(--card),var(--bg),var(--card)); background-size:200% 100%; animation:sh 1.2s infinite; margin-bottom:8px; }
+  .skel{ height:120px; border-radius:var(--r); background:linear-gradient(90deg,var(--card),var(--bg),var(--card)); background-size:200% 100%; animation:sh 1.2s infinite; margin-bottom:12px; }
   @keyframes sh{ 0%{background-position:0 0} 100%{background-position:-200% 0} }
-  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:flex-end; z-index:80; }
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-end; z-index:80; }
   .modal.on{ display:flex; }
   .sheet{
     background:var(--card); width:100%; max-width:520px; margin:0 auto;
@@ -297,23 +299,20 @@
 <!-- ============ شاشة البداية ============ -->
 <section id="startScreen" class="screen on">
   <div class="hero">
-    <div class="hero-inner">
-      <div class="brand-lockup">
-        <div class="brand-mark" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 5H19V8.2H9.2V10.8H17V13.8H9.2V19H5V5Z" fill="#FFFFFF"/>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <h1>أسواق فتح الله للجملة</h1>
-          <p>تسجيل درجات حرارة الثلاجات</p>
-        </div>
+    <div class="brand-lockup">
+      <div class="brand-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+          <path d="M5 5H19V8.4H9.4V11H17.2V14.2H9.4V19H5V5Z" fill="#FFFFFF"/>
+        </svg>
       </div>
-
-      <div class="datebar">
-        <input type="date" id="dateInput" aria-label="التاريخ">
-        <button class="icon-btn" id="refreshBtn" title="تحديث">⟳</button>
+      <div>
+        <h1>أسواق فتح الله للجملة</h1>
+        <p>متابعة وتسجيل درجات حرارة الثلاجات</p>
       </div>
+    </div>
+    <div class="datebar">
+      <input type="date" id="dateInput" aria-label="التاريخ">
+      <button class="icon-btn" id="refreshBtn" title="تحديث">⟳</button>
     </div>
   </div>
 
@@ -329,8 +328,8 @@
       </label>
 
       <label class="fld">
-        <span>اسم المسؤول</span>
-        <input id="userName" type="text" placeholder="اكتب اسمك" maxlength="40" autocomplete="off">
+        <span>اسم مراقب الجودة</span>
+        <input id="userName" type="text" placeholder="الاسم ثلاثي أو اسم المستخدم" maxlength="40" autocomplete="off">
       </label>
 
       <div class="pick-info" id="branchInfo"></div>
@@ -354,8 +353,7 @@
     <div class="progress"><i id="progressBar"></i></div>
     <div class="chips" id="sectionChips"></div>
   </div>
-
-  <div class="work-wrap" id="sectionBody"></div>
+  <div class="cards" id="sectionBody"></div>
 
   <div class="actionbar">
     <div class="problems" id="problems"></div>
@@ -382,12 +380,15 @@
 </div>
 
 <script>
+/* ============================================================
+   ⚙️  الإعدادات
+   ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbycG7Fld1-DO3kCcW-GotiiSPkzHpAwNL0lpmdfLpE8_bB_nh-mp8egD0cYcjPIIICI_A/exec";
 
-/* زران فقط: سليم | عطلان */
+/* زرارين للحالة فقط */
 const STATUSES = [
-  { key: 'ok',    label: 'سليم',  tone: 'ok',  needsTemp: true },
-  { key: 'fault', label: 'عطلان', tone: 'bad', needsTemp: true }
+  { key: 'ok',    label: 'سليم',   tone: 'ok',  needsTemp: true },
+  { key: 'fault', label: 'عطلان',  tone: 'bad', needsTemp: true }
 ];
 
 const ALARM_ABOVE = {
@@ -395,6 +396,9 @@ const ALARM_ABOVE = {
   'تجميد': -15
 };
 
+/* ============================================================
+   الحالة والمتغيرات الداخلية
+   ============================================================ */
 const $  = (s, r) => (r || document).querySelector(s);
 const LS_LAST  = 'fathalla:last';
 const LS_USER  = 'fathalla:user';
@@ -409,18 +413,23 @@ const state = {
   sections: [],
   readings: {},
   active: 0,
-  filter: 'all',
-  query: '',
   dirty: new Set(),
   saving: false,
   timer: null,
-  force: false
+  force: false,
+  loading: false,
+  filter: 'all',
+  search: ''
 };
 
+/* ---------- أدوات ---------- */
 function esc(s){
   return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
+}
+function normPart(s){
+  return String(s === null || s === undefined ? '' : s).replace(/\s+/g, ' ').trim();
 }
 function arNum(n){
   const d = '٠١٢٣٤٥٦٧٨٩';
@@ -465,15 +474,6 @@ function parseTemp(v){
     .replace(/[−–—]/g, '-'));
   return isFinite(n) ? n : null;
 }
-function getFridgeCooling(f){
-  if (f && f.cooling) return f.cooling;
-  return String((f && f.type) || '').split(/[|·]/)[0].trim() || 'تبريد';
-}
-function getFridgeSubtype(f){
-  if (f && f.subtype) return f.subtype;
-  const parts = String((f && f.type) || '').split(/[|·]/);
-  return parts.length > 1 ? parts[1].trim() : '';
-}
 function toast(msg, kind){
   const t = $('#toast');
   t.textContent = msg;
@@ -483,6 +483,63 @@ function toast(msg, kind){
 }
 function apiReady(){ return API_URL && API_URL.indexOf('http') === 0; }
 
+/* ---------- استخراج التبريد/التجميد والموديل ---------- */
+function getFridgeCooling(f){
+  if (!f) return '';
+  if (f.cooling) return normPart(f.cooling);
+  const parts = String(f.type || '').split(/[|·]/);
+  return normPart(parts[0]);
+}
+function getFridgeSubtype(f){
+  if (!f) return '';
+  if (f.subtype) return normPart(f.subtype);
+  const parts = String(f.type || '').split(/[|·]/);
+  return parts.length > 1 ? normPart(parts.slice(1).join('|')) : '';
+}
+function normalizeLoadedStatus(s){
+  if (s === 'به عطل') return 'عطلان';
+  return s || '';
+}
+
+/* ---------- المفتاح الرباعي الفريد للثلاجة ---------- */
+function readingKey(code, sectionName, cooling, subtype){
+  const sec = normPart(sectionName !== undefined ? sectionName : (activeSection() ? activeSection().name : ''));
+  return [
+    sec,
+    normPart(code).toLowerCase(),
+    normPart(cooling),
+    normPart(subtype)
+  ].join('|||');
+}
+function fridgeKey(f, sectionName){
+  return readingKey(f.code, sectionName, getFridgeCooling(f), getFridgeSubtype(f));
+}
+function readingOfFridge(f, sectionName){
+  const k = fridgeKey(f, sectionName);
+  if (!state.readings[k]) state.readings[k] = { temp:'', status:'', note:'', time:'' };
+  return state.readings[k];
+}
+function findFridge(secName, code, cooling, subtype){
+  const sec = state.sections.filter(function(s){ return s.name === secName; })[0];
+  if (!sec) return null;
+  const target = readingKey(code, secName, cooling, subtype);
+  for (let i = 0; i < sec.fridges.length; i++) {
+    if (fridgeKey(sec.fridges[i], secName) === target) return sec.fridges[i];
+  }
+  return null;
+}
+function cardRkey(card){
+  return readingKey(card.dataset.code, card.dataset.section, card.dataset.cooling, card.dataset.subtype);
+}
+function findCardByRkey(rkey){
+  const cards = document.querySelectorAll('#sectionBody .card');
+  for (let i = 0; i < cards.length; i++) {
+    if (cardRkey(cards[i]) === rkey) return cards[i];
+  }
+  return null;
+}
+
+/* ---------- الشبكة ---------- */
 function fetchJSON(url, opts, timeoutMs){
   const ctrl = new AbortController();
   const timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs || 25000);
@@ -516,12 +573,39 @@ function apiPost(payload){
   return fetchJSON(API_URL, { method:'POST', body: JSON.stringify(payload), redirect:'follow' });
 }
 
+/* ---------- مسودة القراءات ---------- */
+function saveDraftReadings(){
+  if (!state.branch || !state.date) return;
+  try {
+    const out = {};
+    state.dirty.forEach(function(k){
+      if (state.readings[k]) out[k] = state.readings[k];
+    });
+    if (!Object.keys(out).length) { clearDraftReadings(); return; }
+    localStorage.setItem(LS_DRAFT_READINGS, JSON.stringify({
+      branch: state.branch, date: state.date, readings: out, ts: Date.now()
+    }));
+  } catch (e) {}
+}
+function loadDraftReadings(branch, date){
+  try {
+    const d = JSON.parse(localStorage.getItem(LS_DRAFT_READINGS) || 'null');
+    if (d && d.branch === branch && d.date === date) return d;
+  } catch (e) {}
+  return null;
+}
+function clearDraftReadings(){
+  try { localStorage.removeItem(LS_DRAFT_READINGS); } catch (e) {}
+}
+
+/* ---------- شاشات ---------- */
 function showScreen(name){
   $('#startScreen').classList.toggle('on', name === 'start');
   $('#workScreen').classList.toggle('on', name === 'work');
   window.scrollTo(0, 0);
 }
 
+/* ---------- اختيار الفرع والاسم ---------- */
 function renderBranchOptions(){
   const sel = $('#branchSelect');
   const prev = sel.value;
@@ -594,8 +678,7 @@ function startRecording(){
 
 function loadBranches(){
   if (!apiReady()) {
-    $('#apiBanner').innerHTML = '<div class="banner">يجب إدخال رابط النشر في أعلى الكود ' +
-      '(المتغير API_URL) لتشغيل الصفحة.</div>';
+    $('#apiBanner').innerHTML = '<div class="banner">يجب إدخال رابط النشر في أعلى الكود (المتغير API_URL) لتشغيل الصفحة.</div>';
     return Promise.resolve();
   }
   const sel = $('#branchSelect');
@@ -611,8 +694,8 @@ function loadBranches(){
       $('#branchInfo').innerHTML =
         '<span style="color:var(--bad);font-weight:700">خطأ: ' + esc(e.message) + '</span><br>' +
         '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">' +
-          '<button class="btn primary" style="min-height:40px;flex:1" onclick="loadBranches()">🔄 إعادة المحاولة</button>' +
-          '<button class="btn ghost" style="min-height:40px;flex:1" onclick="clearCacheAndReload()">🗑 مسح الكاش</button>' +
+          '<button class="btn primary" style="min-height:40px;flex:1" onclick="loadBranches()">إعادة المحاولة</button>' +
+          '<button class="btn ghost" style="min-height:40px;flex:1" onclick="clearCacheAndReload()">مسح الكاش</button>' +
         '</div>';
     });
 }
@@ -626,20 +709,21 @@ function clearCacheAndReload(){
   location.reload();
 }
 
+/* ---------- فتح يوم ---------- */
 function openDay(branch, date){
   state.branch = branch;
   state.date = date;
-  state.filter = 'all';
-  state.query = '';
   state.dirty.clear();
   state.force = false;
+  state.filter = 'all';
+  state.search = '';
   localStorage.setItem(LS_LAST, JSON.stringify({ branch:branch, date:date, user:state.user, ts:Date.now() }));
 
   showScreen('work');
   $('#wbBranch').textContent = branch;
   $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(date) + ' · جارٍ التحميل…';
   $('#sectionChips').innerHTML = '';
-  $('#sectionBody').innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+  $('#sectionBody').innerHTML = '<div class="skel"></div><div class="skel"></div>';
   setActionInfo('…');
   hideProblems();
 
@@ -647,26 +731,42 @@ function openDay(branch, date){
     .then(function(d){
       state.sections = d.sections || [];
       state.readings = {};
+
       const rawList = Array.isArray(d.readings) ? d.readings : [];
       rawList.forEach(function(item){
         if (!item || !item.code || !item.status) return;
-        const secName = item.section || '';
-        const k = readingKey(item.code, secName);
-        /* توحيد التسمية القديمة "به عطل" إلى "عطلان" عند العرض */
-        const normalizedStatus = (item.status === 'به عطل') ? 'عطلان' : item.status;
+        const secName = normPart(item.section);
+        let cooling = getFridgeCooling(item);
+        let subtype = getFridgeSubtype(item);
+
+        /* توافق مع قراءات قديمة بدون عمود النوع: ربطها فقط لو يوجد ثلاجة وحيدة بنفس القسم والكود */
+        if (!cooling && !subtype) {
+          const secObj = state.sections.filter(function(s){ return s.name === secName; })[0];
+          const matches = secObj
+            ? secObj.fridges.filter(function(f){ return normPart(f.code).toLowerCase() === normPart(item.code).toLowerCase(); })
+            : [];
+          if (matches.length === 1) {
+            cooling = getFridgeCooling(matches[0]);
+            subtype = getFridgeSubtype(matches[0]);
+          }
+        }
+
+        const k = readingKey(item.code, secName, cooling, subtype);
         state.readings[k] = {
           temp: (item.temp === null || item.temp === '' || item.temp === undefined) ? '' : String(item.temp),
-          status: normalizedStatus || '',
+          status: normalizeLoadedStatus(item.status),
           note: item.note || '',
           time: item.time || ''
         };
       });
+
       if (!state.sections.length) return renderNoFridges();
 
       const draft = loadDraftReadings(branch, date);
       if (draft && draft.readings) {
         let restored = 0;
         Object.keys(draft.readings).forEach(function(k){
+          if (k.split('|||').length !== 4) return;
           if (!state.readings[k] || !state.readings[k].status) {
             state.readings[k] = draft.readings[k];
             state.dirty.add(k);
@@ -676,8 +776,8 @@ function openDay(branch, date){
         if (restored > 0) {
           const banner = document.createElement('div');
           banner.className = 'banner';
-          banner.innerHTML = '🔄 تم استرجاع <b>' + arNum(restored) + '</b> قراءة غير محفوظة. ' +
-            '<button style="border:none;background:var(--warn);color:#fff;border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer" id="discardDraftBtn">تجاهل</button>';
+          banner.innerHTML = 'تم استرجاع <b>' + arNum(restored) + '</b> قراءة غير محفوظة من الجلسة السابقة. ' +
+            '<button style="border:none;background:var(--warn);color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer" id="discardDraftBtn">تجاهل</button>';
           $('#sectionBody').parentNode.insertBefore(banner, $('#sectionBody'));
           document.getElementById('discardDraftBtn').onclick = function(){
             state.dirty.clear();
@@ -706,8 +806,7 @@ function openDay(branch, date){
 function renderNoFridges(){
   $('#sectionChips').innerHTML = '';
   $('#progressBar').style.width = '0%';
-  $('#sectionBody').innerHTML =
-    '<div class="empty">لا توجد ثلاجات مسجّلة لهذا الفرع.</div>';
+  $('#sectionBody').innerHTML = '<div class="empty">لا توجد ثلاجات مسجّلة لهذا الفرع.</div>';
   $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(state.date);
   setActionInfo('لا توجد ثلاجات');
   $('#saveBtn').disabled = true;
@@ -715,33 +814,18 @@ function renderNoFridges(){
   $('#prevBtn').disabled = true;
 }
 
-function readingKey(code, sectionName){
-  const sec = sectionName !== undefined ? sectionName : (activeSection() ? activeSection().name : '');
-  return sec + '|||' + code;
-}
-function readingOf(code, sectionName){
-  const k = readingKey(code, sectionName);
-  if (!state.readings[k]) state.readings[k] = { temp:'', status:'', note:'', time:'' };
-  return state.readings[k];
-}
+/* ---------- الحالة والإحصائيات ---------- */
 function statusByLabel(label){
   for (let i = 0; i < STATUSES.length; i++) if (STATUSES[i].label === label) return STATUSES[i];
   return label ? { key:'other', label:label, tone:'info', needsTemp:true } : null;
 }
-function isSaved(code, sectionName){
-  const r = state.readings[readingKey(code, sectionName)];
+function isFridgeSaved(f, sectionName){
+  const r = state.readings[fridgeKey(f, sectionName)];
   return !!(r && r.status);
-}
-function isFridgeOver(f, secName){
-  const r = state.readings[readingKey(f.code, secName)];
-  if (!r) return false;
-  const v = parseTemp(r.temp);
-  const lim = ALARM_ABOVE[getFridgeCooling(f)];
-  return (lim !== undefined && v !== null && v > lim);
 }
 function sectionStats(sec){
   let total = sec.fridges.length, saved = 0;
-  sec.fridges.forEach(function(f){ if (isSaved(f.code, sec.name)) saved++; });
+  sec.fridges.forEach(function(f){ if (isFridgeSaved(f, sec.name)) saved++; });
   return { total: total, saved: saved };
 }
 function totalStats(){
@@ -762,7 +846,11 @@ function firstIncomplete(){
 function activeSection(){
   return state.sections[state.active] || null;
 }
+function hasDirtyIn(sec){
+  return sec.fridges.some(function(f){ return state.dirty.has(fridgeKey(f, sec.name)); });
+}
 
+/* ---------- الرسم ---------- */
 function refreshHeader(){
   const t = totalStats();
   const pct = t.total ? Math.round(t.saved / t.total * 100) : 0;
@@ -770,8 +858,9 @@ function refreshHeader(){
   const st = sec ? sectionStats(sec) : { total:0, saved:0 };
   let alarms = 0;
   state.sections.forEach(function(s){ alarms += sectionAlarms(s); });
+
   $('#wbSub').textContent = (state.user ? state.user + ' · ' : '') + fmtDate(state.date) + ' · ' +
-    arNum(t.saved) + ' / ' + arNum(t.total) + ' ثلاجة' +
+    arNum(t.saved) + ' من ' + arNum(t.total) + ' ثلاجة' +
     (alarms ? ' · ⚠ ' + arNum(alarms) + ' فوق الحد' : '');
   $('#progressBar').style.width = pct + '%';
   setActionInfo(sec
@@ -788,15 +877,22 @@ function refreshToolbarCounts(){
   if (!sec) return;
   const st = sectionStats(sec);
   const al = sectionAlarms(sec);
-  const todo = Math.max(0, st.total - st.saved);
-  const head = document.querySelector('#sectionBody .sec-title span');
-  if (head) head.textContent = arNum(st.saved) + '/' + arNum(st.total);
-  const bAll = document.querySelector('#sectionBody [data-filter="all"]');
-  if (bAll) bAll.textContent = 'الكل (' + arNum(st.total) + ')';
-  const bTodo = document.querySelector('#sectionBody [data-filter="todo"]');
-  if (bTodo) bTodo.textContent = 'المتبقية (' + arNum(todo) + ')';
-  const bAlarm = document.querySelector('#sectionBody [data-filter="alarm"]');
-  if (bAlarm) bAlarm.textContent = '⚠ (' + arNum(al) + ')';
+  const rem = st.total - st.saved;
+
+  const titleSpan = document.querySelector('#sectionBody .sec-title span');
+  if (titleSpan) {
+    titleSpan.innerHTML = arNum(st.saved) + ' من ' + arNum(st.total) + ' مسجّلة' +
+      (al ? ' · <b style="color:var(--bad)">' + arNum(al) + ' فوق الحد</b>' : '');
+  }
+  const fAll = document.querySelector('#sectionBody .flt-btn[data-flt="all"]');
+  const fRem = document.querySelector('#sectionBody .flt-btn[data-flt="rem"]');
+  const fAl  = document.querySelector('#sectionBody .flt-btn[data-flt="alarm"]');
+  if (fAll) fAll.textContent = 'الكل (' + arNum(st.total) + ')';
+  if (fRem) fRem.textContent = 'المتبقية (' + arNum(rem) + ')';
+  if (fAl) {
+    fAl.textContent = 'فوق الحد (' + arNum(al) + ')';
+    fAl.style.display = al > 0 ? '' : 'none';
+  }
 }
 
 function renderChips(){
@@ -805,14 +901,45 @@ function renderChips(){
     const st = sectionStats(s);
     const done = st.total > 0 && st.saved >= st.total;
     const alarms = sectionAlarms(s);
-    let badge = '';
-    if (alarms > 0 && !done) badge = ' ⚠' + arNum(alarms);
-    else if (done) badge = ' ✓';
     return '<button class="chip ' + (i === state.active ? 'on' : '') + (done ? ' done' : '') + '" data-i="' + i + '">' +
-      esc(s.name) + ' <b>' + arNum(st.saved) + '/' + arNum(st.total) + '</b>' + badge + '</button>';
+      '<span class="dot"></span>' + esc(s.name) +
+      ' <b>' + arNum(st.saved) + '/' + arNum(st.total) + '</b>' +
+      (done ? ' ✓' : (alarms ? ' ⚠' : '')) +
+      '</button>';
   }).join('');
   const on = box.querySelector('.chip.on');
   if (on && on.scrollIntoView) on.scrollIntoView({ block:'nearest', inline:'center', behavior:'smooth' });
+}
+
+function applyCardVisibility(){
+  const sec = activeSection();
+  if (!sec) return;
+  const q = state.search.trim().toLowerCase();
+  let visibleCount = 0;
+
+  document.querySelectorAll('#cardsList .card').forEach(function(card){
+    const rkey = cardRkey(card);
+    const r = state.readings[rkey];
+    const saved = !!(r && r.status);
+    const isAlarm = card.classList.contains('alarm');
+
+    let matchFlt = true;
+    if (state.filter === 'rem') matchFlt = !saved;
+    else if (state.filter === 'alarm') matchFlt = isAlarm;
+
+    let matchSearch = true;
+    if (q) {
+      const hay = (card.dataset.code + ' ' + card.dataset.cooling + ' ' + card.dataset.subtype).toLowerCase();
+      matchSearch = hay.indexOf(q) > -1;
+    }
+
+    const show = matchFlt && matchSearch;
+    card.hidden = !show;
+    if (show) visibleCount++;
+  });
+
+  const emptyEl = $('#filterEmpty');
+  if (emptyEl) emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
 function renderSection(){
@@ -822,137 +949,148 @@ function renderSection(){
 
   const st0 = sectionStats(sec);
   const al0 = sectionAlarms(sec);
-  const todoCount = Math.max(0, st0.total - st0.saved);
+  const rem0 = st0.total - st0.saved;
+
+  const head = '<div class="sec-title"><b>' + esc(sec.name) + '</b>' +
+    '<span>' + arNum(st0.saved) + ' من ' + arNum(st0.total) + ' مسجّلة' +
+    (al0 ? ' · <b style="color:var(--bad)">' + arNum(al0) + ' فوق الحد</b>' : '') +
+    '</span></div>';
 
   const toolbar = '<div class="sec-toolbar">' +
-    '<div class="sec-title"><b>' + esc(sec.name) + '</b>' +
-      '<span>' + arNum(st0.saved) + '/' + arNum(st0.total) + '</span>' +
+    '<div class="filter-row">' +
+      '<button type="button" class="flt-btn' + (state.filter === 'all' ? ' on' : '') + '" data-flt="all">الكل (' + arNum(st0.total) + ')</button>' +
+      '<button type="button" class="flt-btn' + (state.filter === 'rem' ? ' on' : '') + '" data-flt="rem">المتبقية (' + arNum(rem0) + ')</button>' +
+      '<button type="button" class="flt-btn warn-flt' + (state.filter === 'alarm' ? ' on' : '') + '" data-flt="alarm"' + (al0 ? '' : ' style="display:none"') + '>فوق الحد (' + arNum(al0) + ')</button>' +
     '</div>' +
-    '<div class="filter-bar">' +
-      '<button type="button" class="f-btn' + (state.filter === 'all' ? ' on' : '') + '" data-filter="all">الكل (' + arNum(st0.total) + ')</button>' +
-      '<button type="button" class="f-btn' + (state.filter === 'todo' ? ' on' : '') + '" data-filter="todo">المتبقية (' + arNum(todoCount) + ')</button>' +
-      (al0 ? '<button type="button" class="f-btn has-warn' + (state.filter === 'alarm' ? ' on' : '') + '" data-filter="alarm">⚠ (' + arNum(al0) + ')</button>' : '') +
-    '</div>' +
+    (sec.fridges.length >= 6
+      ? '<div class="search-box"><input id="secSearch" type="text" value="' + esc(state.search) + '" placeholder="بحث بالكود أو نوع الثلاجة…" autocomplete="off"></div>'
+      : '') +
   '</div>';
 
-  const searchBar = (sec.fridges.length >= 6)
-    ? '<div class="search-wrap"><input type="text" class="search-input" id="secSearch" value="' + esc(state.query) + '" placeholder="بحث برمز الثلاجة أو الموديل…" autocomplete="off"></div>'
-    : '';
+  const cardsHtml = sec.fridges.map(function(f){
+    const r = readingOfFridge(f, sec.name);
+    const st = statusByLabel(r.status);
+    const coolingLabel = getFridgeCooling(f);
+    const subtypeLabel = getFridgeSubtype(f);
+    const limit = ALARM_ABOVE[coolingLabel];
+    const val = parseTemp(r.temp);
+    const over = (limit !== undefined && val !== null && val > limit);
+    const rkey = fridgeKey(f, sec.name);
+    const savedNow = isFridgeSaved(f, sec.name);
 
-  const q = state.query.trim().toLowerCase();
-  const visibleFridges = sec.fridges.filter(function(f){
-    const saved = isSaved(f.code, sec.name);
-    const over = isFridgeOver(f, sec.name);
-    if (state.filter === 'todo' && saved && !state.dirty.has(readingKey(f.code, sec.name))) return false;
-    if (state.filter === 'alarm' && !over) return false;
-    if (q) {
-      const hay = (f.code + ' ' + getFridgeCooling(f) + ' ' + getFridgeSubtype(f)).toLowerCase();
-      if (hay.indexOf(q) === -1) return false;
-    }
-    return true;
-  });
+    const statusBtns = (st && st.key === 'other' ? STATUSES.concat([st]) : STATUSES).map(function(s){
+      return '<button type="button" class="seg-btn ' + s.tone + (r.status === s.label ? ' on' : '') +
+        '" data-act="status" data-label="' + esc(s.label) + '">' + esc(s.label) + '</button>';
+    }).join('');
 
-  let cardsHtml = '';
-  if (!visibleFridges.length) {
-    cardsHtml = '<div class="empty">' +
-      (state.filter === 'todo' && !q
-        ? '✓ تم تسجيل جميع ثلاجات هذا القسم بالكامل'
-        : 'لا توجد ثلاجات مطابقة للتصفية الحالية') +
-      '</div>';
-  } else {
-    cardsHtml = '<div class="cards-grid">' + visibleFridges.map(function(f){
-      const r = readingOf(f.code, sec.name);
-      const st = statusByLabel(r.status);
-      const coolingLabel = getFridgeCooling(f);
-      const subtypeLabel = getFridgeSubtype(f);
-      const limit = ALARM_ABOVE[coolingLabel];
-      const val = parseTemp(r.temp);
-      const over = (limit !== undefined && val !== null && val > limit);
+    const stateText = savedNow
+      ? (state.dirty.has(rkey) ? 'معدّلة' : 'محفوظة ' + arabicClock(r.time))
+      : 'لم تُسجَّل';
 
-      const statusBtns = (st && st.key === 'other' ? STATUSES.concat([st]) : STATUSES).map(function(s){
-        return '<button type="button" class="seg-btn ' + s.tone + (r.status === s.label ? ' on' : '') +
-          '" data-act="status" data-label="' + esc(s.label) + '">' + esc(s.label) + '</button>';
-      }).join('');
+    return '<div class="card' + (over ? ' alarm' : (savedNow ? ' is-done' : '')) +
+      '" data-code="' + esc(f.code) +
+      '" data-section="' + esc(sec.name) +
+      '" data-cooling="' + esc(coolingLabel) +
+      '" data-subtype="' + esc(subtypeLabel) + '">' +
 
-      const rkey = readingKey(f.code, sec.name);
-      const savedNow = isSaved(f.code, sec.name);
-      const isCleanSaved = savedNow && !state.dirty.has(rkey);
-      const stateText = savedNow
-        ? (state.dirty.has(rkey) ? 'معدّلة' : '✓ ' + arabicClock(r.time))
-        : 'لم تُسجَّل';
-
-      return '<div class="card' + (isCleanSaved ? ' is-saved' : '') + (over ? ' alarm' : '') + '" data-code="' + esc(f.code) + '" data-section="' + esc(sec.name) + '">' +
-        '<div class="card-top">' +
-          '<span class="code">' + esc(f.code) + '</span>' +
-          '<span class="meta-line">' + esc(coolingLabel) +
-            (subtypeLabel ? ' · <strong>' + esc(subtypeLabel) + '</strong>' : '') +
-          '</span>' +
-          '<span class="state ' + (savedNow ? (state.dirty.has(rkey) ? 'dirty' : 'saved') : 'none') + '">' + stateText + '</span>' +
-          '<button type="button" class="note-toggle' + (r.note ? ' has-note' : '') + '" data-act="note" title="ملاحظة">✎</button>' +
-        '</div>' +
-
-        '<div class="card-body">' +
-          '<div class="status-col">' +
-            '<div class="seg">' + statusBtns + '</div>' +
+      '<div class="card-top">' +
+        '<div class="card-id">' +
+          '<div class="card-row1">' +
+            '<span class="code">' + esc(f.code) + '</span>' +
+            '<span class="alarm-badge"' + (over ? '' : ' hidden') + '>⚠ فوق الحد</span>' +
           '</div>' +
-          '<div class="temp-col">' +
+          '<div class="card-row2">' +
+            '<span class="type">' + esc(coolingLabel || 'تبريد') + '</span>' +
+            (subtypeLabel ? '<span class="subtype-tag">' + esc(subtypeLabel) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<span class="state ' + (savedNow ? (state.dirty.has(rkey) ? 'dirty' : 'saved') : 'none') + '">' +
+          stateText +
+        '</span>' +
+      '</div>' +
+
+      '<div class="card-body">' +
+        '<div class="status-col">' +
+          '<div class="flabel">الحالة</div>' +
+          '<div class="seg">' + statusBtns + '</div>' +
+        '</div>' +
+        '<div class="temp-col">' +
+          '<div class="flabel">الحرارة</div>' +
+          '<div class="temp-row">' +
             '<button type="button" class="sign" data-act="sign" aria-label="سالب">−</button>' +
             '<input class="temp" dir="ltr" inputmode="decimal" enterkeyhint="next" autocomplete="off" ' +
               'value="' + esc(r.temp) + '" placeholder="°م">' +
           '</div>' +
+          '<div class="hint"></div>' +
         '</div>' +
+      '</div>' +
 
-        '<div class="hint"></div>' +
-        '<div class="note-box' + (r.note ? ' open' : '') + '">' +
-          '<input class="note-input" maxlength="120" placeholder="أضف ملاحظة (اختياري)…" value="' + esc(r.note) + '">' +
-        '</div>' +
-      '</div>';
-    }).join('') + '</div>';
-  }
+      '<details class="note"' + (r.note ? ' open' : '') + '>' +
+        '<summary>ملاحظة (اختياري)</summary>' +
+        '<input class="note-input" maxlength="120" value="' + esc(r.note) + '" placeholder="اكتب ملاحظة إذا وجدت…">' +
+      '</details>' +
+    '</div>';
+  }).join('');
 
-  body.innerHTML = toolbar + searchBar + cardsHtml;
+  body.innerHTML = head + toolbar +
+    '<div id="cardsList">' + cardsHtml + '</div>' +
+    '<div id="filterEmpty" class="empty" style="display:none">لا توجد ثلاجات مطابقة للبحث أو الفلتر الحالي.</div>';
 
-  body.querySelectorAll('.card').forEach(function(card){
-    updateHint(card);
-  });
+  body.querySelectorAll('.card').forEach(function(card){ updateHint(card); });
+  applyCardVisibility();
   refreshHeader();
 }
 
 function updateHint(card){
   const code = card.dataset.code;
-  const rkey = cardRkey(card);
   const sec = card.dataset.section;
-  const f = (state.sections.filter(function(s){ return s.name === sec; })[0] || { fridges:[] })
-              .fridges.filter(function(x){ return x.code === code; })[0];
-  const r = state.readings[rkey] || readingOf(code, sec);
+  const cooling = card.dataset.cooling;
+  const subtype = card.dataset.subtype;
+  const rkey = cardRkey(card);
+  const f = findFridge(sec, code, cooling, subtype);
+  const r = state.readings[rkey] || { temp:'', status:'', note:'', time:'' };
   const hint = card.querySelector('.hint');
   if (!hint) return;
 
   const val = parseTemp(r.temp);
-  const limit = f ? ALARM_ABOVE[getFridgeCooling(f)] : undefined;
+  const limit = ALARM_ABOVE[f ? getFridgeCooling(f) : cooling];
   const over = (limit !== undefined && val !== null && val > limit);
 
   card.classList.toggle('alarm', over);
-  hint.classList.remove('show');
+  card.classList.toggle('is-done', !!r.status && !over);
+  const badge = card.querySelector('.alarm-badge');
+  if (badge) badge.hidden = !over;
 
-  if (String(r.temp).trim() && val === null) {
-    hint.textContent = '⚠ القراءة غير صحيحة';
-    hint.classList.add('show');
+  hint.classList.remove('over');
+  if (!String(r.temp).trim()) {
+    hint.textContent = (statusByLabel(r.status) && !statusByLabel(r.status).needsTemp)
+      ? 'لا تتطلب درجة' : 'استخدم − للسالب';
+  } else if (val === null) {
+    hint.textContent = 'رقم غير صحيح';
+    hint.classList.add('over');
   } else if (over) {
-    hint.innerHTML = '⚠ تجاوز الحد المسموح (' + num(limit) + '°)';
-    hint.classList.add('show');
+    hint.innerHTML = '⚠ الحد ' + num(limit) + '°';
+    hint.classList.add('over');
+  } else {
+    hint.textContent = '✓ ضمن الحد';
   }
 }
 
 function sectionAlarms(sec){
   let n = 0;
-  sec.fridges.forEach(function(f){ if (isFridgeOver(f, sec.name)) n++; });
+  sec.fridges.forEach(function(f){
+    const r = state.readings[fridgeKey(f, sec.name)];
+    if (!r) return;
+    const v = parseTemp(r.temp);
+    const lim = ALARM_ABOVE[getFridgeCooling(f)];
+    if (lim !== undefined && v !== null && v > lim) n++;
+  });
   return n;
 }
 
 function alarmsIn(rows){
   return rows.filter(function(r){
-    const lim = ALARM_ABOVE[getFridgeCooling(r)];
+    const lim = ALARM_ABOVE[r.cooling || getFridgeCooling(r)];
     return lim !== undefined && r.temp !== null && r.temp !== undefined && r.temp > lim;
   });
 }
@@ -960,45 +1098,29 @@ function alarmsIn(rows){
 function openConfirm(over){
   $('#confirmText').innerHTML =
     'يوجد ' + arNum(over.length) + ' قراءة متجاوزة للحد: ' +
-    over.map(function(r){ return '«' + esc(r.code) + '» ' + num(r.temp); }).join('، ') +
+    over.map(function(r){ return '«' + esc(r.code) + (r.subtype ? ' · ' + esc(r.subtype) : '') + '» ' + num(r.temp); }).join('، ') +
     '<br>يمكن المتابعة وحفظها كما هي.';
   $('#confirmModal').classList.add('on');
 }
 
 function paintCardState(rkey){
-  const parts = rkey.split('|||');
-  const secName = parts[0];
-  const code = parts.slice(1).join('|||');
-  const card = document.querySelector(
-    '#sectionBody .card[data-code="' + code.replace(/"/g,'\\"') + '"][data-section="' + secName.replace(/"/g,'\\"') + '"]'
-  );
+  const card = findCardByRkey(rkey);
   if (!card) return;
   const el = card.querySelector('.state');
   const r = state.readings[rkey];
-  const saved = !!(r && r.status);
-  const isDirty = state.dirty.has(rkey);
-  card.classList.toggle('is-saved', saved && !isDirty);
-  if (!saved) { el.className = 'state none'; el.textContent = 'لم تُسجَّل'; return; }
-  if (isDirty) { el.className = 'state dirty'; el.textContent = 'معدّلة'; }
-  else { el.className = 'state saved'; el.textContent = '✓ ' + arabicClock(r.time); }
+  if (!r || !r.status) { el.className = 'state none'; el.textContent = 'لم تُسجَّل'; return; }
+  if (state.dirty.has(rkey)) { el.className = 'state dirty'; el.textContent = 'معدّلة'; }
+  else { el.className = 'state saved'; el.textContent = 'محفوظة ' + arabicClock(r.time); }
 }
 
 function setActionInfo(txt){ $('#abInfo').textContent = txt || ''; }
 
-function cardRkey(card){
-  return readingKey(card.dataset.code, card.dataset.section);
-}
-
+/* ---------- تعديل القيم ---------- */
 function onInput(e){
   const input = e.target;
   if (input.id === 'secSearch') {
-    state.query = input.value;
-    renderSection();
-    const s = $('#secSearch');
-    if (s) {
-      s.focus();
-      try { s.setSelectionRange(s.value.length, s.value.length); } catch (err) {}
-    }
+    state.search = input.value;
+    applyCardVisibility();
     return;
   }
 
@@ -1009,7 +1131,8 @@ function onInput(e){
 
   if (input.classList.contains('temp')) {
     r.temp = input.value;
-    if (!r.status && parseTemp(r.temp) !== null && STATUSES.length) {
+    /* اختيار "سليم" تلقائياً عند إدخال رقم صحيح لأول مرة */
+    if (!r.status && parseTemp(r.temp) !== null) {
       r.status = STATUSES[0].label;
       card.querySelectorAll('.seg-btn').forEach(function(b){
         b.classList.toggle('on', b.dataset.label === r.status);
@@ -1018,39 +1141,27 @@ function onInput(e){
     state.dirty.add(rkey);
     paintCardState(rkey);
     updateHint(card);
+    saveDraftReadings();
     refreshToolbarCounts();
     refreshHeader();
-    renderChips();
     scheduleAutosave();
   } else if (input.classList.contains('note-input')) {
     r.note = input.value;
-    const toggle = card.querySelector('.note-toggle');
-    if (toggle) toggle.classList.toggle('has-note', !!r.note.trim());
     state.dirty.add(rkey);
     paintCardState(rkey);
+    saveDraftReadings();
     scheduleAutosave();
-  }
-}
-
-function onKeyDown(e){
-  if (e.key !== 'Enter') return;
-  if (!e.target.classList.contains('temp')) return;
-  e.preventDefault();
-  const inputs = Array.prototype.slice.call(document.querySelectorAll('#sectionBody .temp'));
-  const idx = inputs.indexOf(e.target);
-  if (idx >= 0 && idx < inputs.length - 1) {
-    inputs[idx + 1].focus();
-    inputs[idx + 1].select();
-  } else {
-    e.target.blur();
   }
 }
 
 function onClick(e){
-  const filterBtn = e.target.closest('[data-filter]');
-  if (filterBtn) {
-    state.filter = filterBtn.dataset.filter;
-    renderSection();
+  const flt = e.target.closest('.flt-btn');
+  if (flt) {
+    state.filter = flt.dataset.flt || 'all';
+    document.querySelectorAll('#sectionBody .flt-btn').forEach(function(b){
+      b.classList.toggle('on', b === flt);
+    });
+    applyCardVisibility();
     return;
   }
 
@@ -1071,9 +1182,9 @@ function onClick(e){
     });
     paintCardState(rkey);
     updateHint(card);
+    saveDraftReadings();
     refreshToolbarCounts();
     refreshHeader();
-    renderChips();
     const needs = statusByLabel(label) && statusByLabel(label).needsTemp;
     const input = card.querySelector('.temp');
     if (needs && !String(r.temp).trim()) input.focus();
@@ -1085,100 +1196,56 @@ function onClick(e){
     const v = input.value.trim();
     input.value = !v ? '-' : (v.charAt(0) === '-' ? v.slice(1) : '-' + v);
     r.temp = input.value;
-    if (!r.status && parseTemp(r.temp) !== null && STATUSES.length) {
-      r.status = STATUSES[0].label;
-      card.querySelectorAll('.seg-btn').forEach(function(b){
-        b.classList.toggle('on', b.dataset.label === r.status);
-      });
-    }
     state.dirty.add(rkey);
     paintCardState(rkey);
     updateHint(card);
+    saveDraftReadings();
     refreshToolbarCounts();
-    input.focus();
     scheduleAutosave();
-  }
-
-  if (btn.dataset.act === 'note') {
-    const box = card.querySelector('.note-box');
-    if (!box) return;
-    const willOpen = !box.classList.contains('open');
-    box.classList.toggle('open', willOpen);
-    if (willOpen) {
-      const inp = box.querySelector('.note-input');
-      if (inp) inp.focus();
-    }
   }
 }
 
+/* ---------- تجميع وحفظ القسم ---------- */
 function collectSection(sec){
   const rows = [];
   const problems = [];
   sec.fridges.forEach(function(f){
-    const r = readingOf(f.code, sec.name);
+    const r = readingOfFridge(f, sec.name);
     const st = statusByLabel(r.status);
-    const tempStr = String(r.temp === null || r.temp === undefined ? '' : r.temp).trim();
-
-    if (!r.status) { problems.push(f.code + ': لم تختر الحالة بعد'); return; }
-    if (st && st.needsTemp && !tempStr) { problems.push(f.code + ': لم تكتب درجة الحرارة'); return; }
-
     const cooling = getFridgeCooling(f);
     const subtype = getFridgeSubtype(f);
+    const fullType = subtype ? (cooling + '|' + subtype) : cooling;
+    const labelName = f.code + (subtype ? ' (' + subtype + ')' : '');
+    const tempStr = String(r.temp === null || r.temp === undefined ? '' : r.temp).trim();
 
+    if (!r.status) { problems.push(labelName + ': لم تختر الحالة بعد'); return; }
+    if (st && st.needsTemp && !tempStr) { problems.push(labelName + ': لم تكتب درجة الحرارة'); return; }
     if (tempStr) {
       const n = parseTemp(tempStr);
-      if (n === null) { problems.push(f.code + ': الرقم المكتوب غير صحيح'); return; }
-      rows.push({ code:f.code, cooling:cooling, subtype:subtype, type:f.type, temp:n, status:r.status, note:(r.note || '').trim() });
+      if (n === null) { problems.push(labelName + ': الرقم المكتوب غير صحيح'); return; }
+      rows.push({
+        section: sec.name, code: f.code, cooling: cooling, subtype: subtype, type: fullType,
+        status: r.status, temp: n, note: r.note || ''
+      });
     } else {
-      rows.push({ code:f.code, cooling:cooling, subtype:subtype, type:f.type, temp:null, status:r.status, note:(r.note || '').trim() });
+      rows.push({
+        section: sec.name, code: f.code, cooling: cooling, subtype: subtype, type: fullType,
+        status: r.status, temp: null, note: r.note || ''
+      });
     }
   });
-  return { rows:rows, problems:problems };
-}
-
-function hasDirtyIn(sec){
-  return sec.fridges.some(function(f){ return state.dirty.has(readingKey(f.code, sec.name)); });
-}
-
-function saveDraftReadings(){
-  if (!state.branch || !state.date) return;
-  try {
-    localStorage.setItem(LS_DRAFT_READINGS, JSON.stringify({
-      branch: state.branch,
-      date: state.date,
-      user: state.user,
-      readings: state.readings,
-      ts: Date.now()
-    }));
-  } catch(e) {}
-}
-
-function loadDraftReadings(branch, date){
-  try {
-    const raw = localStorage.getItem(LS_DRAFT_READINGS);
-    if (!raw) return null;
-    const d = JSON.parse(raw);
-    if (d.branch === branch && d.date === date) return d;
-  } catch(e) {}
-  return null;
-}
-
-function clearDraftReadings(){
-  try { localStorage.removeItem(LS_DRAFT_READINGS); } catch(e) {}
+  return { rows: rows, problems: problems };
 }
 
 function scheduleAutosave(){
   clearTimeout(state.timer);
-  state.force = false;
-  saveDraftReadings();
   state.timer = setTimeout(function(){
     const sec = activeSection();
-    if (!sec || state.saving) return;
-    if (!hasDirtyIn(sec)) return;
+    if (!sec || state.saving || !hasDirtyIn(sec)) return;
     const c = collectSection(sec);
-    if (!c.rows.length || c.problems.length) return;
+    if (!c.rows.length) return;
     saveSection({ silent:true, force:true });
-  }, 1800);
+  }, 1500);
 }
 
 function saveSection(opts){
@@ -1187,17 +1254,21 @@ function saveSection(opts){
   if (!sec || state.saving) return Promise.resolve();
 
   const c = collectSection(sec);
-  if (!c.rows.length) { toast('لا توجد قراءات مكتملة في هذا القسم', 'warn'); return Promise.resolve(); }
-  if (c.problems.length && !opts.force) {
+  if (!opts.force && c.problems.length) {
     showProblems(c.problems, sec, c.rows.length);
+    return Promise.resolve();
+  }
+  if (!c.rows.length) {
+    if (!opts.silent) toast('أدخل قراءة واحدة على الأقل قبل الحفظ', 'warn');
     return Promise.resolve();
   }
 
   const over = alarmsIn(c.rows);
-  if (over.length && !opts.confirmed && !opts.silent) {
+  if (!opts.silent && !opts.confirmed && over.length) {
     openConfirm(over);
     return Promise.resolve();
   }
+
   hideProblems();
   state.force = false;
   state.saving = true;
@@ -1217,13 +1288,15 @@ function saveSection(opts){
         return { saved:c.rows.length, time:nowClock() };
       });
     })
-    .then(function(res){
-      if (!opts.silent) {
-        toast('تم حفظ «' + sec.name + '» ✓', 'ok');
-      }
+    .then(function(){
+      if (!opts.silent) toast('تم حفظ «' + sec.name + '» ✓', 'ok');
     })
     .catch(function(err){
-      toast('تعذّر الحفظ: ' + err.message + ' — أعد المحاولة', 'bad');
+      if (!opts.silent) {
+        toast('تعذّر الحفظ: ' + err.message + ' — أعد المحاولة', 'bad');
+        const card = document.querySelector('#sectionBody .card');
+        if (card) card.scrollIntoView({ behavior:'smooth', block:'center' });
+      }
     })
     .then(function(){
       state.saving = false;
@@ -1236,12 +1309,17 @@ function verifySaved(sec, rows){
   return apiGet({ action:'getDay', branch:state.branch, date:state.date })
     .then(function(d){
       const list = Array.isArray(d.readings) ? d.readings : [];
+      const byKey = {};
+      list.forEach(function(item){
+        if (!item) return;
+        const k = readingKey(item.code, item.section || sec.name, getFridgeCooling(item), getFridgeSubtype(item));
+        byKey[k] = item;
+      });
       return rows.every(function(r){
-        const s = list.filter(function(x){
-          return x.section === sec.name && x.code === r.code;
-        })[0];
+        const k = readingKey(r.code, r.section || sec.name, r.cooling, r.subtype);
+        const s = byKey[k];
         if (!s) return false;
-        if (s.status !== r.status) return false;
+        if (normalizeLoadedStatus(s.status) !== r.status) return false;
         const a = parseTemp(s.temp);
         return r.temp === null ? a === null : a === r.temp;
       });
@@ -1251,20 +1329,22 @@ function verifySaved(sec, rows){
 
 function applySaved(sec, rows, time){
   rows.forEach(function(r){
-    const cur = readingOf(r.code, sec.name);
+    const k = readingKey(r.code, sec.name, r.cooling, r.subtype);
+    const cur = state.readings[k] || (state.readings[k] = { temp:'', status:'', note:'', time:'' });
     cur.temp = r.temp === null ? '' : String(r.temp);
     cur.status = r.status;
     cur.note = r.note;
     cur.time = time || nowClock();
-    state.dirty.delete(readingKey(r.code, sec.name));
+    state.dirty.delete(k);
   });
-  if (!state.dirty.size) clearDraftReadings();
+  saveDraftReadings();
   renderChips();
   refreshHeader();
   refreshToolbarCounts();
   document.querySelectorAll('#sectionBody .card').forEach(function(card){
     paintCardState(cardRkey(card));
   });
+  if (state.filter === 'rem') applyCardVisibility();
 }
 
 function showProblems(problems, sec, readyCount){
@@ -1289,12 +1369,14 @@ function hideProblems(){
   if (!state.saving) $('#saveBtn').textContent = 'حفظ القسم';
 }
 
+/* ---------- التنقل بين الأقسام ---------- */
 function goSection(i){
   if (i < 0 || i >= state.sections.length) return;
   const cur = activeSection();
   const after = function(){
     state.active = i;
-    state.query = '';
+    state.filter = 'all';
+    state.search = '';
     hideProblems();
     renderChips();
     renderSection();
@@ -1310,6 +1392,7 @@ function goSection(i){
   after();
 }
 
+/* ---------- الأحداث ---------- */
 function bind(){
   $('#dateInput').addEventListener('change', function(){
     localStorage.setItem(LS_COUNT, this.value);
@@ -1357,8 +1440,16 @@ function bind(){
   });
 
   $('#sectionBody').addEventListener('input', onInput);
-  $('#sectionBody').addEventListener('keydown', onKeyDown);
   $('#sectionBody').addEventListener('click', onClick);
+  $('#sectionBody').addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && e.target.classList.contains('temp')) {
+      e.preventDefault();
+      const temps = Array.prototype.slice.call(document.querySelectorAll('#sectionBody .card:not([hidden]) .temp'));
+      const idx = temps.indexOf(e.target);
+      if (idx > -1 && idx < temps.length - 1) temps[idx + 1].focus();
+      else e.target.blur();
+    }
+  });
 
   $('#saveBtn').addEventListener('click', function(){
     if (state.force) { saveSection({ force:true }); return; }
@@ -1395,7 +1486,6 @@ function bind(){
   window.addEventListener('beforeunload', function(e){
     if (state.dirty.size) { e.preventDefault(); e.returnValue = ''; }
   });
-
   window.addEventListener('online', function(){
     if (state.dirty.size) scheduleAutosave();
   });
@@ -1417,13 +1507,11 @@ function boot(){
 
   loadBranches().then(function(){
     const hasLast = last && last.branch && state.branches.some(function(b){ return b.branch === last.branch; });
-
     if (hasLast) {
       $('#branchSelect').value = last.branch;
       updateBranchInfo();
       updateStartState();
     }
-
     if (hasLast && last.date === today && last.user) {
       state.user = last.user;
       $('#userName').value = last.user;
