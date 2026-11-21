@@ -4,26 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#141414">
-<title>إعداد بيانات الثلاجات — أسواق فتح الله</title>
+<title>إعداد بيانات الثلاجات — أسواق فتح الله للجملة</title>
 <style>
   :root{
     color-scheme: light;
-    --bg:#F5F5F4; --card:#FFFFFF; --ink:#141414; --muted:#5C5E63;
-    --line:#E3E3E0; --brand:#DF5B00; --brand-bright:#F37021; --brand-dark:#B84700; --brand-soft:#FFF1E6;
-    --black:#141414; --black-2:#222222;
-    --ok:#0E8A54; --ok-soft:#E5F6EE; --warn:#B86200; --warn-soft:#FEF3E2;
+    --bg:#F5F4F2; --card:#FFFFFF; --ink:#141414; --muted:#666666;
+    --line:#E5E2DC; --brand:#F37021; --brand-dark:#DF5B00; --brand-soft:#FFF1E6;
+    --black:#141414;
+    --ok:#107C41; --ok-soft:#E7F6ED;
+    --warn:#B45309; --warn-soft:#FEF3C7;
     --bad:#C62828; --bad-soft:#FDECEA;
-    --shadow:0 1px 2px rgba(20,20,20,.05);
+    --shadow:0 1px 3px rgba(20,20,20,.06);
     --r:14px;
   }
   @media (prefers-color-scheme: dark){
     :root{
       color-scheme: dark;
-      --bg:#0E0E0F; --card:#18181A; --ink:#F4F4F2; --muted:#A0A3AA;
-      --line:#2B2B2F; --brand:#F37021; --brand-bright:#FF8533; --brand-dark:#D45608; --brand-soft:#2E1C10;
-      --black:#141414; --black-2:#242428;
-      --ok:#2CD08C; --ok-soft:#112D21; --warn:#F39C38; --warn-soft:#2E2110;
-      --bad:#F06B6B; --bad-soft:#34181A; --shadow:none;
+      --bg:#0E0E0E; --card:#181818; --ink:#F4F4F2; --muted:#A3A3A3;
+      --line:#2B2B2B; --brand:#F37021; --brand-dark:#FF8538; --brand-soft:#2D1A0E;
+      --black:#111111;
+      --ok:#2DCE7A; --ok-soft:#102B1D;
+      --warn:#F59E0B; --warn-soft:#2F220B;
+      --bad:#EF5350; --bad-soft:#341616;
+      --shadow:none;
     }
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -35,24 +38,25 @@
   button, input, select{ font-family:inherit; font-size:15.5px; color:inherit; }
   button{ cursor:pointer; }
 
-  .brand-lockup{ display:flex; align-items:center; gap:11px; max-width:760px; margin:0 auto; }
-  .brand-mark{
-    width:44px; height:44px; flex:0 0 44px; border-radius:11px;
-    background:var(--brand-bright); border:2px solid rgba(255,255,255,.18);
-    display:grid; place-items:center; box-shadow:0 4px 12px rgba(0,0,0,.28);
-  }
   .hero{
-    background:linear-gradient(160deg, var(--black-2), var(--black));
-    color:#fff; padding:18px 16px; border-bottom:4px solid var(--brand-bright);
-    border-radius:0 0 20px 20px;
+    background:linear-gradient(165deg, #1A1A1A, #0D0D0D);
+    color:#fff; padding:20px 16px;
+    border-bottom:4px solid var(--brand);
+    border-radius:0 0 22px 22px;
   }
-  .hero h1{ margin:0; font-size:18px; font-weight:800; color:#fff; }
-  .hero p{ margin:2px 0 0; font-size:12.5px; color:#F37021; font-weight:600; }
+  .brand-lockup{ display:flex; align-items:center; gap:12px; max-width:720px; margin:0 auto; }
+  .brand-mark{
+    width:42px; height:42px; flex:0 0 42px; border-radius:11px;
+    background:var(--brand); display:grid; place-items:center;
+    box-shadow:0 4px 12px rgba(243,112,33,.35);
+  }
+  .hero h1{ margin:0; font-size:18px; font-weight:800; }
+  .hero p{ margin:2px 0 0; font-size:12.5px; color:#D4D4D4; }
 
-  .wrap{ max-width:760px; margin:0 auto; padding:14px 12px; }
-  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); margin-bottom:12px; overflow:hidden; }
+  .wrap{ max-width:720px; margin:0 auto; padding:16px 14px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden; }
   .card-head{ display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line); }
-  .num{ width:26px; height:26px; border-radius:50%; background:var(--brand); color:#fff; font-size:12.5px; font-weight:700; display:grid; place-items:center; flex:0 0 auto; }
+  .num{ width:26px; height:26px; border-radius:50%; background:var(--brand); color:#fff; font-size:12.5px; font-weight:800; display:grid; place-items:center; flex:0 0 auto; }
   .card-head h2{ margin:0; font-size:15px; }
   .card-body{ padding:14px; }
 
@@ -71,15 +75,14 @@
     background:var(--card); text-align:right; min-height:46px;
   }
   .sec-check .box{ width:18px; height:18px; border-radius:5px; border:1.5px solid var(--line); flex:0 0 auto; display:grid; place-items:center; font-size:11px; color:#fff; }
-  .sec-check.on{ border-color:var(--brand); background:var(--brand-soft); color:var(--brand-dark); }
-  @media (prefers-color-scheme: dark){ .sec-check.on{ color:#fff; } }
+  .sec-check.on{ border-color:var(--brand); background:var(--brand-soft); color:var(--ink); font-weight:700; }
   .sec-check.on .box{ background:var(--brand); border-color:var(--brand); }
 
   .block{ background:var(--card); border:1px solid var(--line); border-radius:14px; margin-top:12px; overflow:hidden; box-shadow:var(--shadow); }
-  .block-head{ display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--black); color:#fff; border-bottom:2px solid var(--brand-bright); }
-  .block-head b{ font-size:14px; color:#fff; flex:1; }
-  .block-head .cnt{ font-size:12px; color:#D4D4D8; font-weight:700; font-variant-numeric:tabular-nums; }
-  .add{ border:none; background:var(--brand-bright); color:#fff; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; min-height:34px; }
+  .block-head{ display:flex; align-items:center; gap:8px; padding:10px 12px; background:var(--black); color:#fff; }
+  .block-head b{ font-size:14px; flex:1; }
+  .block-head .cnt{ font-size:12px; color:#D4D4D4; font-weight:700; font-variant-numeric:tabular-nums; }
+  .add{ border:none; background:var(--brand); color:#fff; border-radius:8px; padding:6px 12px; font-size:12.5px; font-weight:700; min-height:34px; }
 
   .rows{ padding:10px 12px; display:flex; flex-direction:column; gap:10px; }
   .row{ display:flex; flex-direction:column; gap:6px; padding-bottom:10px; border-bottom:1px solid var(--line); }
@@ -108,15 +111,15 @@
 
   .bar{
     position:fixed; inset-inline:0; bottom:0; background:var(--card); border-top:1px solid var(--line);
-    padding:8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); z-index:40;
-    box-shadow:0 -4px 18px rgba(20,20,20,.08);
+    padding:8px 14px calc(8px + env(safe-area-inset-bottom, 0px)); z-index:40;
+    box-shadow:0 -4px 18px rgba(0,0,0,.08);
   }
   .bar .info{ text-align:center; font-size:12px; color:var(--muted); margin-bottom:6px; font-variant-numeric:tabular-nums; }
-  .bar .btns{ display:flex; gap:8px; max-width:760px; margin:auto; }
-  .btn{ flex:1; min-height:48px; border:none; border-radius:12px; font-size:15px; font-weight:700; padding:0 14px; }
+  .bar .btns{ display:flex; gap:8px; max-width:720px; margin:auto; }
+  .btn{ flex:1; min-height:48px; border:none; border-radius:12px; font-size:15px; font-weight:800; padding:0 14px; }
   .btn.primary{ background:var(--brand); color:#fff; }
   .btn.primary:disabled{ background:var(--line); color:var(--muted); }
-  .btn.ghost{ background:var(--bg); border:1px solid var(--line); flex:0 0 36%; }
+  .btn.ghost{ background:var(--bg); border:1.5px solid var(--line); flex:0 0 36%; }
 
   .msg{ border-radius:11px; padding:11px 13px; font-size:13px; margin-bottom:12px; display:none; }
   .msg.err{ display:block; background:var(--bad-soft); color:var(--bad); border:1px solid var(--bad); }
@@ -129,7 +132,7 @@
   .result h2{ margin:0 0 6px; font-size:18px; }
   .result p{ margin:0; color:var(--muted); font-size:13.5px; }
 
-  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:flex-end; z-index:80; }
+  .modal{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-end; z-index:80; }
   .modal.on{ display:flex; }
   .sheet{ background:var(--card); width:100%; max-width:640px; margin:0 auto; border-radius:20px 20px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
   .sheet h3{ margin:0 0 8px; font-size:16px; }
@@ -145,7 +148,7 @@
   <div class="brand-lockup">
     <div class="brand-mark" aria-hidden="true">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M5 5H19V8.2H9.2V10.8H17V13.8H9.2V19H5V5Z" fill="#FFFFFF"/>
+        <path d="M5 5H19V8.4H9.4V11H17.2V14.2H9.4V19H5V5Z" fill="#FFFFFF"/>
       </svg>
     </div>
     <div>
@@ -212,6 +215,9 @@
 </div>
 
 <script>
+/* ============================================================
+   ⚙️  الإعدادات
+   ============================================================ */
 const API_URL = "https://script.google.com/macros/s/AKfycbycG7Fld1-DO3kCcW-GotiiSPkzHpAwNL0lpmdfLpE8_bB_nh-mp8egD0cYcjPIIICI_A/exec";
 
 const BRANCHES = [
@@ -241,6 +247,9 @@ const FRIDGE_SUBTYPES = [
 
 const CODE_PLACEHOLDER = 'رمز الثلاجة مثال : A';
 
+/* ============================================================
+   الحالة والمنطق
+   ============================================================ */
 const $ = (s, r) => (r || document).querySelector(s);
 const LS_DRAFT = 'fathalla:setup:draft';
 
@@ -249,8 +258,7 @@ const state = {
   existing: null,
   picked: [],
   data: {},
-  busy: false,
-  confirmed: false
+  busy: false
 };
 
 function esc(s){
@@ -311,7 +319,7 @@ function buildRowHTML(r, i){
     return '<option value="' + esc(v) + '"' + (cooling === v ? ' selected' : '') + '>' + esc(v) + '</option>';
   }).join('');
 
-  const subtypeOpts = '<option value="">-- النوع --</option>' +
+  const subtypeOpts = '<option value="">-- نوع الثلاجة --</option>' +
     FRIDGE_SUBTYPES.map(function(v){
       return '<option value="' + esc(v) + '"' + (subtype === v ? ' selected' : '') + '>' + esc(v) + '</option>';
     }).join('');
@@ -409,7 +417,7 @@ function onBlockClick(e){
     renderBlocks();
     updateBar();
     saveDraft();
-    const rows = document.querySelector('[data-sec="' + sec + '"] .rows');
+    const rows = document.querySelector('[data-sec="' + sec.replace(/"/g, '\\"') + '"] .rows');
     if (rows) {
       const inputs = rows.querySelectorAll('.code-input');
       if (inputs.length) inputs[inputs.length - 1].focus();
@@ -475,7 +483,7 @@ function loadBranchConfig(branch){
         applyExisting();
       } else {
         $('#existingInfo').textContent = 'لا يوجد إعداد لهذا الفرع — سيتم البدء من جديد.';
-        clearForm(false);
+        clearForm();
       }
     })
     .catch(function(e){
@@ -511,6 +519,7 @@ function clearForm(){
   saveDraft();
 }
 
+/* التحقق: يُمنع التكرار فقط لو نفس القسم + الكود + النوع + نوع الثلاجة متطابقين */
 function validate(){
   const problems = [];
   if (!state.branch) problems.push('اختر الفرع');
@@ -522,8 +531,12 @@ function validate(){
     if (!rows.length) { problems.push('القسم «' + sec + '» بدون ثلاجات'); return; }
     rows.forEach(function(r){
       const c = cleanCode(r.code);
-      const k = sec + '|||' + c.toLowerCase();
-      if (seen[k]) problems.push('رمز مكرر داخل القسم «' + sec + '»: ' + c);
+      const cooling = r.cooling || 'تبريد';
+      const subtype = r.subtype || '';
+      const k = [sec, c.toLowerCase(), cooling, subtype].join('|||');
+      if (seen[k]) {
+        problems.push('ثلاجة مكررة بالكامل في «' + sec + '»: ' + c + ' (' + cooling + (subtype ? ' · ' + subtype : '') + ')');
+      }
       seen[k] = 1;
       if (c.length > 30) problems.push('رمز طويل جدًا: ' + c.slice(0, 12) + '…');
     });
@@ -540,32 +553,22 @@ function payload(){
           const code = cleanCode(r.code);
           const cooling = r.cooling || 'تبريد';
           const subtype = r.subtype || '';
-          return { code: code, cooling: cooling, subtype: subtype };
+          const typeStr = subtype ? (cooling + '|' + subtype) : cooling;
+          return { code: code, cooling: cooling, subtype: subtype, type: typeStr };
         })
         .filter(function(r){ return r.code; })
     };
   }).filter(function(s){ return s.fridges.length; });
 
-  const sectionsWithType = sections.map(function(sec){
-    return {
-      name: sec.name,
-      fridges: sec.fridges.map(function(f){
-        const typeStr = f.subtype ? (f.cooling + '|' + f.subtype) : f.cooling;
-        return { code: f.code, cooling: f.cooling, subtype: f.subtype, type: typeStr };
-      })
-    };
-  });
-
   return {
     action: 'submitSetup',
     branch: state.branch,
-    sections: sectionsWithType,
-    expected: sectionsWithType.reduce(function(a, s){ return a + s.fridges.length; }, 0)
+    sections: sections,
+    expected: sections.reduce(function(a, s){ return a + s.fridges.length; }, 0)
   };
 }
 
 let modalAction = null;
-
 function openModal(title, text, okText, action){
   $('#mTitle').textContent = title;
   $('#mText').innerHTML = text;
